@@ -22,29 +22,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Contact form -> mailto fallback (no backend yet)
+  // Contact form -> submits directly to stageart.pnima@gmail.com via FormSubmit (no mail client needed)
   const form = document.getElementById('contact-form');
   if (form) {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const data = new FormData(form);
-      const name = data.get('name') || '';
-      const phone = data.get('phone') || '';
-      const email = data.get('email') || '';
-      const topic = data.get('topic') || '';
-      const message = data.get('message') || '';
-
-      const subject = encodeURIComponent(`פנייה חדשה מהאתר – ${topic || 'שחר חוויות חינוכיות'}`);
-      const body = encodeURIComponent(
-        `שם: ${name}\nטלפון: ${phone}\nאימייל: ${email}\nנושא: ${topic}\n\nהודעה:\n${message}`
-      );
-      window.location.href = `mailto:info@shachar-experiences.co.il?subject=${subject}&body=${body}`;
-
+    form.addEventListener('submit', () => {
       const note = document.getElementById('form-status');
       if (note) {
-        note.textContent = 'נפתח עבורך חלון מייל עם הפרטים שמילאת — פשוט לשלוח! אפשר גם ליצור קשר ישירות בטלפון או בוואטסאפ.';
+        note.textContent = 'שולח את הפנייה...';
       }
     });
+  }
+
+  // After FormSubmit redirects back with ?sent=1, show a thank-you note
+  if (window.location.search.includes('sent=1')) {
+    const card = document.querySelector('.form-card');
+    if (card) {
+      card.innerHTML = '<h3>תודה רבה! 🎉</h3><p>קיבלנו את הפנייה שלכם ונחזור אליכם תוך יום עסקים אחד. אפשר גם לפנות אלינו ישירות בוואטסאפ אם זה דחוף.</p>';
+    }
   }
 
   // Simple reveal-on-scroll
