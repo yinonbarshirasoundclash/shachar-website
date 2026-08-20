@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.location.search.includes('sent=1')) {
     const card = document.querySelector('.form-card');
     if (card) {
-      card.innerHTML = '<h3>תודה רבה! 🎉</h3><p>קיבלנו את הפנייה שלכם ונחזור אליכם תוך יום עסקים אחד. אפשר גם לפנות אלינו ישירות בוואטסאפ אם זה דחוף.</p>';
+      card.innerHTML = '<h3>תודה רבה! 🎉</h3><p>קיבלנו את הפנייה שלכם ונחזור אליכם תוך יום עסקים אחד. אפשר גם לפנות אלינו ישירות בוואטסאפ.</p>';
     }
   }
 
