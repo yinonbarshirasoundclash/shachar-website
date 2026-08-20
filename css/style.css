@@ -310,7 +310,7 @@ p  { margin: 0 0 1em; color: var(--color-ink-soft); }
 }
 .card-icon.teal { background: var(--color-secondary-light); }
 .card-icon.gold { background: var(--color-accent-light); }
-.card ul.check li { position: relative; padding-inline-end: 26px; margin-bottom: 8px; color: var(--color-ink-soft); font-size: .95rem; }
+.card ul.check li { position: relative; padding-right: 26px; margin-bottom: 8px; color: var(--color-ink-soft); font-size: .95rem; }
 .card ul.check li::before { content: "✓"; position: absolute; right: 0; color: var(--color-secondary); font-weight: 700; }
 
 .program-card { display: flex; flex-direction: column; }
@@ -353,12 +353,12 @@ p  { margin: 0 0 1em; color: var(--color-ink-soft); }
 }
 
 /* Timeline (syllabus) */
-.timeline { position: relative; padding-inline-start: 0; }
+.timeline { position: relative; padding-right: 0; }
 .timeline-item {
   position: relative;
-  padding-inline-end: 40px;
+  padding-right: 40px;
   padding-bottom: 30px;
-  border-inline-end: 2px solid var(--color-border);
+  border-right: 2px solid var(--color-border);
 }
 .timeline-item:last-child { border-color: transparent; padding-bottom: 0; }
 .timeline-item::before {
