@@ -2203,7 +2203,7 @@ function renderQuestion(){const c=G.cur;if(!c)return;const T=G.teams,q=curQ(c);l
 
 /* ================= game flow ================= */
 function aiColor(){const h=x=>[1,3,5].map(i=>parseInt(x.slice(i,i+2),16)),d=(a,b)=>{const p=h(a),q=h(b);return Math.hypot(p[0]-q[0],p[1]-q[1],p[2]-q[2])};if(d(AI.color,ST.color)>140)return AI.color;return["#ff6b6b","#f2b705","#51cf66","#9775fa"].find(c=>d(c,ST.color)>140)}
-function newGame(pvp){AI=AIL[ST.lvl];SIM=buildSim();const op=pvp?NET.peer:null;G={tok:1,phase:"board",turn:Math.random()<.5?0:1,used:{},cur:null,aiFav:Math.floor(Math.random()*7),pvp:!!pvp,tier:ST.tier,gid:Date.now(),short:!!ST.short,teams:[{name:ST.name||"אני",color:ST.color,score:0,dbl:false,lvl:0},pvp?{name:op.name||"חבר",color:pvColor(op.color),score:0,dbl:false,lvl:0}:{name:AI.short,color:aiColor(),score:0,dbl:false,lvl:0}]};
+function newGame(pvp){AI=AIL[ST.lvl];SIM=buildSim();stat(pvp?"start_pvp":"start_"+ST.tier+(ST.short?"_s":""));const op=pvp?NET.peer:null;G={tok:1,phase:"board",turn:Math.random()<.5?0:1,used:{},cur:null,aiFav:Math.floor(Math.random()*7),pvp:!!pvp,tier:ST.tier,gid:Date.now(),short:!!ST.short,teams:[{name:ST.name||"אני",color:ST.color,score:0,dbl:false,lvl:0},pvp?{name:op.name||"חבר",color:pvColor(op.color),score:0,dbl:false,lvl:0}:{name:AI.short,color:aiColor(),score:0,dbl:false,lvl:0}]};
  if(G.short){const keep=[0,1,2,3,4,5,6].sort(()=>Math.random()-.5).slice(0,4),km=rnd(MISS.length);for(let ci=0;ci<7;ci++)if(!keep.includes(ci))for(let l=0;l<3;l++)G.used[`c${ci}-${l}`]={x:1};MISS.forEach((_,i)=>{if(i!==km)G.used["m"+i]={x:1}});G.aiFav=keep[rnd(4)]}
  if(pvp){NET.lastState="";R("sim").set(JSON.stringify({qs:SIM.qs,whoami:SIM.whoami,quote:SIM.quote}))}
  courtSig="";$("#app").classList.add("ingame");render();SFX.horn();setTimeout(()=>SFX.cheer(2,.6),300);toast(G.turn===0?"🪙 הטלת מטבע: אתה מתחיל!":`🪙 הטלת מטבע: ${G.teams[1].name} מתחיל`,G.teams[G.turn].color,2600);if(G.turn===1&&!G.pvp)aiTurn()}
@@ -2378,7 +2378,7 @@ function skipScene(){const sc=$("#scene");if(!sc.classList.contains("on"))return
  const c=G&&G.cur;if(!c||!c.outcome)return;runId++;const o=c.outcome;crowd(o.kind==="make"?"cheer":"groan");caption(capFor(c),true);showAns(c);sc.classList.add("done");BL.x=-200;setB()}
 
 /* ---------- end ---------- */
-function endGame(){if(G.pvp){G.phase="end";G.tok++;netPush();return showEndPvp()}G.phase="end";G.tok++;const T=G.teams,me=T[0].score,ai=T[1].score;const win=me>ai,tie=me===ai;
+function endGame(){if(G.pvp){if(G.phase!=="end"&&NET.role!=="guest")stat("end_pvp");G.phase="end";G.tok++;netPush();return showEndPvp()}if(G.phase!=="end")stat("end_"+ST.tier+(ST.short?"_s":""));G.phase="end";G.tok++;const T=G.teams,me=T[0].score,ai=T[1].score;const win=me>ai,tie=me===ai;
  const rk=ST.tier+":"+ST.lvl,r=REC[rk]||(REC[rk]={g:0,w:0,best:0,streak:0,bestStreak:0});r.g++;if(win){r.w++;r.streak++;r.bestStreak=Math.max(r.bestStreak,r.streak)}else r.streak=0;const newBest=me>r.best;if(newBest)r.best=me;store.set("records",REC);
  const myRec={name:T[0].name,tier:ST.tier,lvl:ST.lvl,short:G.short?1:0,score:Math.round(me),ai:Math.round(ai),win:win?1:0};const lbP=lbSubmit(myRec);
  const gor=ST.lvl===3;const line=win?(gor?"עצרת את גורסקי!!! 🐐 זה לא אמור לקרות.":"ניצחון! 🏆"):tie?"תיקו! 🤝":(gor?"גורסקי בלתי ניתן לעצירה. כמו תמיד.":"הפעם הוא היה טוב יותר. נסה שוב!");
@@ -2576,6 +2576,23 @@ $("#homeBtn").onclick=()=>{if(G&&G.phase!=="end"){const b=$("#homeBtn");if(!b.da
  document.addEventListener("focusin",e=>{if(e.target&&e.target.id==="ansIn"){document.body.classList.add("kb");setTimeout(show,250)}});
  document.addEventListener("focusout",e=>{if(e.target&&e.target.id==="ansIn")setTimeout(()=>{if(document.activeElement!==$("#ansIn"))document.body.classList.remove("kb")},150)});
 })();
+
+/* ---- usage stats (Firebase /stats/{day}/{key}, +1 transactions) ---- */
+function statDay(d){d=d||new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function stat(k){try{if(!FB_CFG||typeof NETLOCAL!=="undefined"&&NETLOCAL)return;const day=statDay();netDB().then(db=>{db.ref(`stats/${day}/${k}`).transaction(n=>(n||0)+1);db.ref(`stats/all/${k}`).transaction(n=>(n||0)+1)}).catch(()=>{})}catch(e){}}
+(function(){try{if(/[?&]stats\b/.test(location.search))return;let s=null;try{s=sessionStorage.getItem("nbaVisit")}catch(e){}if(!s){try{sessionStorage.setItem("nbaVisit","1")}catch(e){}stat("visit")}
+ let u=null;try{u=localStorage.getItem("nbaDay")}catch(e){}const d=statDay();if(u!==d){try{localStorage.setItem("nbaDay",d)}catch(e){}stat("users")}}catch(e){}})();
+(async function(){if(!/[?&]stats\b/.test(location.search)||!FB_CFG)return;
+ const box=document.createElement("div");box.style.cssText="position:fixed;inset:0;z-index:9999;background:#0b1020;color:#fff;overflow:auto;padding:16px;font:15px system-ui;direction:rtl";box.innerHTML="<h2>📊 סטטיסטיקת החידון</h2><p>טוען…</p>";document.body.appendChild(box);
+ try{const db=await netDB();const snap=await db.ref("stats").once("value");const S=snap.val()||{};
+  const cols=[["users","מבקרים"],["visit","כניסות"],["start_rookie","התחילו רוקי"],["start_mid","התחילו מיד"],["start_max","התחילו מקס"],["start_pvp","משחקי 2"],["end_rookie","סיימו רוקי"],["end_mid","סיימו מיד"],["end_max","סיימו מקס"]];
+  const v=(r,k)=>(r[k]||0)+(r[k+"_s"]||0);
+  const days=Object.keys(S).filter(k=>k!=="all").sort().reverse();
+  const row=(lbl,r)=>`<tr><td>${lbl}</td>${cols.map(([k])=>`<td>${v(r,k)}</td>`).join("")}</tr>`;
+  box.innerHTML=`<h2>📊 סטטיסטיקת החידון</h2><p style="opacity:.7">מבקרים = מכשירים שונים באותו יום. כניסות = פתיחות של החידון. נספר מ-19.11.2026.</p>
+  <div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;text-align:center" border="1" cellpadding="6"><tr><th>יום</th>${cols.map(c=>`<th>${c[1]}</th>`).join("")}</tr>
+  ${row("<b>סה״כ</b>",S.all||{})}${days.map(d=>row(d.split("-").reverse().join("."),S[d])).join("")}</table></div>`}
+ catch(e){box.innerHTML+="<p>שגיאה: "+e.message+"</p>"}})();
 </script>
 </body>
 </html>
