@@ -2100,6 +2100,7 @@ const dispOf=s=>itemParts(s)[0];
 function knownClash(text,aliases){if(typeof PL==="undefined")return false;const x=norm(text);const P=PL.find(p=>norm(dispOf(p[0]))===x);if(!P)return false;const pt=itemParts(P[0]).map(norm);
  return !(aliases||[]).some(a=>pt.includes(norm(a))||(toksOf(a).length>1&&matchOne(text,a,true)))}
 function okAns(text,aliases){return matchAny(text,aliases)&&!knownClash(text,aliases)}
+function okQ(text,q){const al=[q.a].concat(q.acc||[]).filter(Boolean);return okAns(text,al)}
 function findItem(list,text,exclude){for(const st of ["exact",true,false])for(let i=0;i<list.length;i++){if(exclude&&exclude.includes(i))continue;if(matchAny(text,itemParts(list[i]),st)&&!knownClash(text,itemParts(list[i])))return i}return -1}
 function optsOf(h){return String(h||"").includes("|")?h.split("|").map(x=>x.trim()).filter(Boolean):null}
 /* plausible wrong answers for the computer: same kind of answer (player / team / country / number), from the same category */
@@ -2249,7 +2250,7 @@ async function humanAns(c,q,stage,tok,who=0){if(who===0)aiSay(stage==="steal"?"�
  if(q.t==="list")return humanList(c,q,stage,tok,who);
  const r=await askP(who,{sec:stage==="steal"?60:90,hint:stage==="main"&&!!q.h&&!c.hint,pass:true});if(!alive(tok))return false;
  if(!r.text){toast(r.timeout?"⏱️ נגמר הזמן":who===0?"🤷 ויתרת":`🤷 ${G.teams[who].name} ויתר`,"#555");return false}
- if(okAns(r.text,q.acc||[q.a])){SFX.ping();return true}
+ if(okQ(r.text,q)){SFX.ping();return true}
  return await appealP(who,r.text,q.a)}
 async function humanList(c,q,stage,tok,who=0){c.got=[];const said=[];const deadline=Date.now()+(60+20*q.n)*1000;render();
  while(alive(tok)){const left=Math.ceil((deadline-Date.now())/1000);if(left<=0){toast("⏱️ נגמר הזמן","#555");return false}
@@ -2302,7 +2303,7 @@ async function playHL(c,tok){const q=curQ(c),ans=Number(q.n);let sayer;
 /* ---------- missions (race) ---------- */
 function drawPair(){const codes=Object.keys(TEAMN),pairs=[];for(let i=0;i<codes.length;i++)for(let j=i+1;j<codes.length;j++){const a=codes[i],b=codes[j];const ps=PL.filter(p=>p[1].split(" ").includes(a)&&p[1].split(" ").includes(b));if(ps.length)pairs.push([a,b])}return pairs[rnd(pairs.length)]}
 function playersFor(pair){return PL.filter(p=>{const t=p[1].split(" ");return t.includes(pair[0])&&t.includes(pair[1])})}
-function raceCheck(c,text){if(c.kind==="whoami")return okAns(text,SIM.whoami.acc);if(c.kind==="quote")return okAns(text,SIM.quote.acc);const k=findItem(PL.map(p=>p[0]),text);return k>=0&&playersFor(c.pair).includes(PL[k])}
+function raceCheck(c,text){if(c.kind==="whoami")return okQ(text,SIM.whoami);if(c.kind==="quote")return okQ(text,SIM.quote);const k=findItem(PL.map(p=>p[0]),text);return k>=0&&playersFor(c.pair).includes(PL[k])}
 function raceAnswer(c){if(c.kind==="whoami")return SIM.whoami.a;if(c.kind==="quote")return SIM.quote.a;return playersFor(c.pair).map(p=>dispOf(p[0])).join(", ")}
 function playRace(c,tok){const kind=c.kind;if(kind==="played"&&!c.pair){c.pair=drawPair();render()}
  const limit=kind==="whoami"?(10*CLUE_MS/1000+20):kind==="quote"?75:90;let aiAt=Infinity,aiOk=true;
