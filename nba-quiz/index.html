@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
+<meta name="description" content="חידון NBA בעברית: 3 רמות קושי, יריבים ממוחשבים, משחק מול חבר אונליין וטבלת שיאים. מתאים לאוהדים מתחילים ועד המקצוענים.">
+<link rel="canonical" href="https://edushow.co.il/nba-quiz/">
+<meta property="og:type" content="website"><meta property="og:url" content="https://edushow.co.il/nba-quiz/">
+<meta property="og:title" content="חידון ה-NBA הגדול"><meta property="og:description" content="3 רמות, יריבים ממוחשבים, משחק מול חבר וטבלת שיאים. תצליחו לנצח?">
+<meta property="og:image" content="https://edushow.co.il/nba-quiz/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="he_IL">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="חידון NBA"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script>
 /* הגדרות Firebase לחידון ה-NBA הגדול (משחק בין שניים + טבלת שיאים משותפת).
    זה מפתח צד-לקוח של Firebase – הוא נועד להופיע בקוד האתר; ההגנה היא כללי האבטחה של מסד הנתונים. */
@@ -522,7 +530,7 @@ body.kb .inpbtns .cb{padding:4px 10px;font-size:13px}
 .hof-list li.me{background:rgba(255,200,61,.18);color:var(--gold)}
 .hof-vs{font-family:Bungee,Rubik,sans-serif;font-size:13px;color:#ffd43b;white-space:nowrap}
 .hof-empty,.hof-load{text-align:center;padding:16px 6px;color:var(--muted)}
-</style>
+.cb.share{background:linear-gradient(135deg,#25d366,#128c7e);border-color:#25d366}.cb.inst{width:100%;margin-top:10px;background:#1b2347;border-style:dashed}.howto{text-align:right;line-height:1.9;margin:10px 18px;font-size:17px}</style>
 </head>
 <body>
 <div class="app" id="app">
@@ -2049,7 +2057,7 @@ SIMS_M.push(
 const CATS=[{n:"שנים ראשונות",i:"📜"},{n:"קארים עד שאק",i:"👑"},{n:"ימינו",i:"⚡"},{n:"דראפט",i:"🎯"},{n:"בינלאומי",i:"🌍"},{n:"מספרים על מספרים",i:"🔢"},{n:"מחוץ לפרקט",i:"🎬"}];
 const LEVELS=[{n:"4",p:4},{n:"8",p:8},{n:"12",p:12}];
 const MISS=[{id:"played",n:"מי שיחק שם?",i:"🔀"},{id:"whoami",n:"מי אני?",i:"🕵️"},{id:"quote",n:"מי אמר?",i:"💬"}];
-const TIERS=[{id:"rookie",n:"רוקי",d:"לגילאי 12–13 ולאוהדים מתחילים"},{id:"mid",n:"מיד-לבל",d:"למי שרואה משחקים מדי פעם"},{id:"max",n:"סופרמקס",d:"רמת חידון ה-NBA הגדול – לטופ של הטופ"}];
+const TIERS=[{id:"rookie",n:"רוקי",d:"רואים היילייטס ומכירים את הכוכבים"},{id:"mid",n:"מיד-לבל",d:"רואים משחקים ועוקבים אחרי הליגה"},{id:"max",n:"סופרמקס",d:"חיים את הליגה – כולל ההיסטוריה"}];
 const AIL=[
  {name:"צופה ערוץ הספורט",short:"ערוץ הספורט",color:"#ff6b6b",stars:1,desc:"רואה תקצירים ומכיר את הכוכבים הגדולים. שאלות ה-4 בסדר, ב-8 מתלבט, וב-12 בעיקר מנחש.",
   p:[[.7,.2],[.5,.5],[.3,.67]],pp:.5,hlq:.55,hlsd:.35,dbl:.25,greedy:.25,whoami:[8,13],quote:{p:.35,t:[16,28]},played:{p:.35,t:[18,34]},delay:[2600,4200]},
@@ -2380,9 +2388,9 @@ function skipScene(){const sc=$("#scene");if(!sc.classList.contains("on"))return
 /* ---------- end ---------- */
 function endGame(){if(G.pvp){if(G.phase!=="end"&&NET.role!=="guest")stat("end_pvp");G.phase="end";G.tok++;netPush();return showEndPvp()}if(G.phase!=="end")stat("end_"+ST.tier+(ST.short?"_s":""));G.phase="end";G.tok++;const T=G.teams,me=T[0].score,ai=T[1].score;const win=me>ai,tie=me===ai;
  const rk=ST.tier+":"+ST.lvl,r=REC[rk]||(REC[rk]={g:0,w:0,best:0,streak:0,bestStreak:0});r.g++;if(win){r.w++;r.streak++;r.bestStreak=Math.max(r.bestStreak,r.streak)}else r.streak=0;const newBest=me>r.best;if(newBest)r.best=me;store.set("records",REC);
- const myRec={name:T[0].name,tier:ST.tier,lvl:ST.lvl,short:G.short?1:0,score:Math.round(me),ai:Math.round(ai),win:win?1:0};const lbP=lbSubmit(myRec);
+ const myRec={name:T[0].name,tier:ST.tier,lvl:ST.lvl,short:G.short?1:0,score:Math.round(me),ai:Math.round(ai),win:win?1:0};const lbP=badName(myRec.name)?Promise.resolve():lbSubmit(myRec);
  const gor=ST.lvl===3;const line=win?(gor?"עצרת את גורסקי!!! 🐐 זה לא אמור לקרות.":"ניצחון! 🏆"):tie?"תיקו! 🤝":(gor?"גורסקי בלתי ניתן לעצירה. כמו תמיד.":"הפעם הוא היה טוב יותר. נסה שוב!");
- $("#endBody").innerHTML=`<div class="trophy">${win?"🏆":tie?"🤝":"😤"}</div><div class="end-k">סוף המשחק · ${esc(TIERS.find(t=>t.id===ST.tier).n)} · מול ${esc(AI.short)}</div><div class="end-t" style="color:${win?T[0].color:"#fff"}">${esc(line)}</div><div class="end-s"><span style="color:${T[0].color}">${esc(T[0].name)} ${fmt(me)}</span> · <span style="color:${T[1].color}">${esc(T[1].name)} ${fmt(ai)}</span></div>${newBest&&me>0?`<div class="newrec">⭐ שיא אישי חדש ברמה הזו!</div>`:""}<div class="rec-line">מאזן מול ${esc(AI.short)}: ${r.w}–${r.g-r.w} · שיא: ${fmt(r.best)} נק' · רצף ניצחונות: ${r.streak}</div><div id="lbBox"></div><div class="ovb"><button class="cb go" id="eAgain">🔁 משחק חדש</button><button class="cb" id="eHome">🏠 תפריט</button></div>`;
+ $("#endBody").innerHTML=`<div class="trophy">${win?"🏆":tie?"🤝":"😤"}</div><div class="end-k">סוף המשחק · ${esc(TIERS.find(t=>t.id===ST.tier).n)} · מול ${esc(AI.short)}</div><div class="end-t" style="color:${win?T[0].color:"#fff"}">${esc(line)}</div><div class="end-s"><span style="color:${T[0].color}">${esc(T[0].name)} ${fmt(me)}</span> · <span style="color:${T[1].color}">${esc(T[1].name)} ${fmt(ai)}</span></div>${newBest&&me>0?`<div class="newrec">⭐ שיא אישי חדש ברמה הזו!</div>`:""}<div class="rec-line">מאזן מול ${esc(AI.short)}: ${r.w}–${r.g-r.w} · שיא: ${fmt(r.best)} נק' · רצף ניצחונות: ${r.streak}</div><div id="lbBox"></div><div class="ovb"><button class="cb go" id="eAgain">🔁 משחק חדש</button><button class="cb share" id="eShare">📲 שתפו את התוצאה</button><button class="cb" id="eHome">🏠 תפריט</button></div>`;LASTRES={me:Math.round(me),ai:Math.round(ai),win,tie,tier:ST.tier,lvl:ST.lvl,short:!!G.short,name:T[0].name,color:T[0].color};
  $("#endOv").classList.add("on");if(win){SFX.win();let n=0;const iv=setInterval(()=>{burst([T[0].color,"#ffc83d","#fff"],80,innerWidth*(.2+Math.random()*.6),innerHeight*.3);if(++n>6)clearInterval(iv)},400)}else SFX.groan();
  Promise.resolve(lbP).then(()=>lbBoard($("#lbBox"),{tier:ST.tier,lvl:ST.lvl,short:G.short,mine:myRec}));$("#eAgain").onclick=()=>{$("#endOv").classList.remove("on");newGame()};$("#eHome").onclick=()=>{$("#endOv").classList.remove("on");goSetup()}}
 
@@ -2524,14 +2532,14 @@ async function lbAll(){const ov=$("#allOv"),b=$("#allBody");ov.classList.add("on
 function goSetup(){if(NET.role)netLeave();if(G)G.tok++;G=null;closeInput();sceneOff();$("#app").classList.remove("ingame");show("setup");renderSetup()}
 function renderSetup(){const v=$("#v-setup");
  v.innerHTML=`<div class="hero"><div class="t">חידון ה-NBA הגדול</div><div class="s">אתה מול המחשב. 7 קטגוריות, 3 משימות, בלי רחמים.</div></div>
-<div class="card"><div class="lbl">השם שלך</div><input id="pName" class="tname" maxlength="14" placeholder="איך קוראים לך?" value="${esc(ST.name)}"><div class="sws">${SWC.map(c=>`<button class="sw ${c===ST.color?"on":""}" data-sw="${c}" style="--s:${c}"></button>`).join("")}</div></div>
+<div class="card"><div class="lbl">השם שלך</div><input id="pName" class="tname" maxlength="14" placeholder="שם פרטי או כינוי" value="${esc(ST.name)}"><div class="sws">${SWC.map(c=>`<button class="sw ${c===ST.color?"on":""}" data-sw="${c}" style="--s:${c}"></button>`).join("")}</div></div>
 <div class="card"><div class="lbl">רמת השאלות</div><div class="tiers">${TIERS.map(t=>`<button class="tier ${ST.tier===t.id?"on":""} ${t.soon?"soon":""}" data-tier="${t.id}" ${t.soon?"disabled":""}><b>${t.n}</b><small>${t.soon?"בקרוב":t.d}</small></button>`).join("")}</div></div>
 <div class="card"><div class="lbl">היריב שלך</div><div class="opps">${AIL.map((a,i)=>`<button class="opp ${ST.lvl===i?"on":""} ${i===3?"goat":""}" data-lvl="${i}" style="--oc:${a.color}"><span class="oav"><svg viewBox="22 4 56 58">${playerInner({name:a.short,color:a.color},AIFACE[i],false)}</svg></span><span class="otx"><b>${esc(a.name)}</b><small>${esc(a.desc)}</small></span><span class="ost">${"★".repeat(a.stars)}${"☆".repeat(4-a.stars)}</span></button>`).join("")}</div></div>
 <div class="card">${LB_ON?`<div id="lbSetup"></div>`:`<div class="lbl">🏆 השיאים שלך</div>`}${(()=>{const r=REC[ST.tier+":"+ST.lvl];return r?`<div class="pool">המאזן שלך מול ${esc(AIL[ST.lvl].short)}: ${r.w}–${r.g-r.w} · השיא שלך: ${fmt(r.best)} נק'</div>`:(LB_ON?"":`<div class="pool">עוד לא שיחקת ברמה הזו.</div>`)})()}</div>
 <div class="card"><div class="lbl">🆚 משחק מול חבר (אונליין)</div>${FB_CFG||NETLOCAL?`<div class="pvp"><button class="cb go" id="pvHost">פתח חדר</button><input id="pvCode" class="tname" inputmode="numeric" maxlength="4" placeholder="קוד"><button class="cb" id="pvJoin">הצטרף</button></div><div id="pvMsg" class="pool">פותחים חדר, שולחים לחבר את הקוד – ומשחקים אחד נגד השני באותם חוקים. רמת השאלות של מי שפותח את החדר.</div>`:`<div class="pool">משחק מול חבר זמין בגרסה שבאתר.</div>`}</div>
 <label class="tog"><input type="checkbox" id="pShort" ${ST.short?"checked":""}> <span>⚡ משחק קצר – 4 קטגוריות ומשימה אחת (בערך חצי זמן)</span></label>
 <label class="tog"><input type="checkbox" id="pAnim" ${ST.anim?"checked":""}> <span>🎬 עם אנימציות (אפשר תמיד לדלג)</span></label>
-<button class="big" id="goBtn">🏀 שריקת פתיחה</button>
+<button class="big" id="goBtn">🏀 שריקת פתיחה</button>${isStandalone()?"":`<button class="cb inst" id="instBtn">📲 הוסיפו את החידון למסך הבית</button>`}
 <details class="rules"><summary>📖 החוקים</summary><ul><li>תורות מתחלפים: בוחרים משבצת ועונים. טעות – השאלה עוברת ליריב.</li><li>כולם מתחילים עם שאלות ה-4. צדקת ב-4 – נפתחות שאלות ה-8. צדקת ב-8 – נפתחות שאלות ה-12.</li><li>💡 רמז = חצי מהנקודות. 🔥 הכפלה אחת לכל המשחק, לפני שרואים את השאלה. מי שגונב שאלה מוכפלת מקבל גם הוא את הניקוד הכפול.</li><li>📋 ״מנו״ – צריך לתת את מספר התשובות הנדרש, אחת אחרי השנייה.</li><li>🏓 פינג פונג – כל צד בתורו נותן תשובה. מי שנתקע ראשון – היריב צריך לצדוק באותו סיבוב כדי לקחת.</li><li>↕️ יותר/פחות – צד אחד אומר מספר, השני אומר יותר או פחות.</li><li>⭐ משימות – מירוץ מול היריב: מי שעונה נכון ראשון לוקח. טעות = נעילה (חוץ מ״מי שיחק שם״).</li><li>🧠 טיפ מהפודקאסט: רוב המתמודדים שומרים את ההכפלה ל-12 לקראת הסוף, בעיקר כשהם בפיגור. אחרים מכפילים 12 מוקדם בקטגוריה החזקה שלהם, לפני שיגנבו להם אותה. ומי שביתרון בשאלות האחרונות – לוקח רמז מראש כדי להוריד את הסיכון.</li><li>✋ אם המחשב לא זיהה תשובה נכונה (כתיב שונה) – אפשר לערער. שחקו הוגן 😉</li></ul></details>
 ${FB_CFG||NETLOCAL?`<details class="rules" id="sgBox"><summary>💡 הציעו שאלה לחידון</summary><div class="sgf">
 <textarea id="sgQ" class="tname" maxlength="300" rows="3" placeholder="השאלה"></textarea>
@@ -2543,12 +2551,13 @@ ${FB_CFG||NETLOCAL?`<details class="rules" id="sgBox"><summary>💡 הציעו �
  $$("[data-sw]",v).forEach(b=>b.onclick=()=>{ST.color=b.dataset.sw;store.set("settings",ST);renderSetup()});
  $$("[data-lvl]",v).forEach(b=>b.onclick=()=>{ST.lvl=+b.dataset.lvl;store.set("settings",ST);SFX.pick();renderSetup()});
  $$("[data-tier]",v).forEach(b=>b.onclick=()=>{ST.tier=b.dataset.tier;store.set("settings",ST);SFX.pick();renderSetup()});
- lbBoard($("#lbSetup"),{});if($("#sgGo"))$("#sgGo").onclick=async()=>{ac();const q=$("#sgQ").value.trim(),an=$("#sgA").value.trim(),m=$("#sgMsg");if(q.length<8||!an){m.textContent="✍️ צריך שאלה ותשובה";return}
+ lbBoard($("#lbSetup"),{});if($("#sgGo"))$("#sgGo").onclick=async()=>{ac();const q=$("#sgQ").value.trim(),an=$("#sgA").value.trim(),m=$("#sgMsg");if(q.length<8||!an){m.textContent="✍️ צריך שאלה ותשובה";return}if(badName(q)||badName(an)){m.textContent="🙅 ההצעה לא נשלחה";return}
  $("#sgGo").disabled=true;try{const db=await netDB();await db.ref("suggest").push({q,a:an,src:$("#sgS").value.trim().slice(0,200),tier:$("#sgT").value,name:(ST.name||"").slice(0,20),date:Date.now()});
  m.textContent="✅ תודה! השאלה נשלחה לבדיקה";$("#sgQ").value="";$("#sgA").value="";$("#sgS").value=""}catch(e){m.textContent="😕 השליחה נכשלה, נסו שוב"}$("#sgGo").disabled=false};
  if($("#pvHost")){$("#pvHost").onclick=()=>{ac();if(NET.role)netLeave();netHost()};$("#pvJoin").onclick=()=>{ac();if(NET.role)netLeave();netJoin($("#pvCode").value)};$("#pvCode").onkeydown=e=>{if(e.key==="Enter")$("#pvJoin").click()}}
  $("#pShort").onchange=e=>{ST.short=e.target.checked;store.set("settings",ST);renderSetup()};$("#pAnim").onchange=e=>{ST.anim=e.target.checked;store.set("settings",ST);syncAnimBtn()};
- $("#goBtn").onclick=()=>{ac();if(!ST.name||ST.name==="אני"){const i=$("#pName");ST.name="";i.value="";i.focus();i.scrollIntoView({block:"center"});if(!$(".namewarn"))i.insertAdjacentHTML("afterend",`<div class="namewarn">✍️ כתבו שם כדי להיכנס לטבלת השיאים</div>`);toast("✍️ קודם כותבים שם","#c92a2a");return}store.set("settings",ST);newGame()};
+ $("#goBtn").onclick=()=>{ac();if(badName(ST.name)){toast("🙅 בחרו שם או כינוי אחר","#c92a2a");const i=$("#pName");i.focus();return}if(!ST.name||ST.name==="אני"){const i=$("#pName");ST.name="";i.value="";i.focus();i.scrollIntoView({block:"center"});if(!$(".namewarn"))i.insertAdjacentHTML("afterend",`<div class="namewarn">✍️ כתבו שם כדי להיכנס לטבלת השיאים</div>`);toast("✍️ קודם כותבים שם","#c92a2a");return}store.set("settings",ST);newGame()};
+ if($("#instBtn"))$("#instBtn").onclick=()=>{ac();doInstall()};
  AI=AIL[ST.lvl];setVars()}
 function syncAnimBtn(){$("#animBtn").textContent=ST.anim?"🎬":"⏩";$("#animBtn").title=ST.anim?"אנימציות פועלות":"בלי אנימציות"}
 
@@ -2585,14 +2594,62 @@ function stat(k){try{if(!FB_CFG||typeof NETLOCAL!=="undefined"&&NETLOCAL)return;
 (async function(){if(!/[?&]stats\b/.test(location.search)||!FB_CFG)return;
  const box=document.createElement("div");box.style.cssText="position:fixed;inset:0;z-index:9999;background:#0b1020;color:#fff;overflow:auto;padding:16px;font:15px system-ui;direction:rtl";box.innerHTML="<h2>📊 סטטיסטיקת החידון</h2><p>טוען…</p>";document.body.appendChild(box);
  try{const db=await netDB();const snap=await db.ref("stats").once("value");const S=snap.val()||{};
-  const cols=[["users","מבקרים"],["visit","כניסות"],["start_rookie","התחילו רוקי"],["start_mid","התחילו מיד"],["start_max","התחילו מקס"],["start_pvp","משחקי 2"],["end_rookie","סיימו רוקי"],["end_mid","סיימו מיד"],["end_max","סיימו מקס"]];
+  const cols=[["users","מבקרים"],["visit","כניסות"],["share","שיתופים"],["install","התקנות"],["pwa_open","מהאייקון"],["start_rookie","התחילו רוקי"],["start_mid","התחילו מיד"],["start_max","התחילו מקס"],["start_pvp","משחקי 2"],["end_rookie","סיימו רוקי"],["end_mid","סיימו מיד"],["end_max","סיימו מקס"]];
   const v=(r,k)=>(r[k]||0)+(r[k+"_s"]||0);
   const days=Object.keys(S).filter(k=>k!=="all").sort().reverse();
   const row=(lbl,r)=>`<tr><td>${lbl}</td>${cols.map(([k])=>`<td>${v(r,k)}</td>`).join("")}</tr>`;
   box.innerHTML=`<h2>📊 סטטיסטיקת החידון</h2><p style="opacity:.7">מבקרים = מכשירים שונים באותו יום. כניסות = פתיחות של החידון. נספר מ-19.11.2026.</p>
   <div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;text-align:center" border="1" cellpadding="6"><tr><th>יום</th>${cols.map(c=>`<th>${c[1]}</th>`).join("")}</tr>
-  ${row("<b>סה״כ</b>",S.all||{})}${days.map(d=>row(d.split("-").reverse().join("."),S[d])).join("")}</table></div>`}
+  ${row("<b>סה״כ</b>",S.all||{})}${days.map(d=>row(d.split("-").reverse().join("."),S[d])).join("")}</table></div>${(()=>{const a=S.all||{},src=Object.keys(a).filter(k=>k.startsWith("src_")).sort((p,q)=>a[q]-a[p]);return src.length?`<h3 style="margin-top:18px">🔗 מאיפה הגיעו (סה״כ)</h3><table border="1" cellpadding="6" style="border-collapse:collapse;text-align:center"><tr><th>מקור</th><th>כניסות</th></tr>${src.map(k=>`<tr><td>${k.slice(4)}</td><td>${a[k]}</td></tr>`).join("")}</table>`:""})()}`}
  catch(e){box.innerHTML+="<p>שגיאה: "+e.message+"</p>"}})();
+
+/* ---- growth: share, install, links, name filter ---- */
+let LASTRES=null,DEFER_INSTALL=null;
+const BAD_SUB=["שרמוט","זונה","מזדיינ","מזדיין","בןזונה","כוסאמ","כוסעמ","כוסשל","לזיין","זיינת","פורנו","היטלר","נאצי","fuck","shit","bitch","cunt","whore","slut","porn","nigg","hitler","nazi","dick","pussy","penis","זקפה","אונס"];
+const BAD_TOK=["כוס","זין","חרא","מניאק","מניאקית","זבל","סקס","תחת","אידיוט","מפגר","מפגרת","טמבל","דפוק","sex","ass","fag","gay"];
+function badName(s){if(!s)return false;const n=String(s).toLowerCase().replace(/[׳'"`״._\-]/g,"");const flat=n.replace(/\s+/g,"");if(BAD_SUB.some(w=>flat.includes(w)))return true;return n.split(/\s+/).some(w=>BAD_TOK.includes(w))}
+function isStandalone(){try{return matchMedia("(display-mode: standalone)").matches||navigator.standalone===true}catch(e){return false}}
+const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+addEventListener("beforeinstallprompt",e=>{e.preventDefault();DEFER_INSTALL=e});
+addEventListener("appinstalled",()=>{stat("install");toast("✅ החידון נוסף למסך הבית")});
+function infoOv(html){let o=$("#infoOv");if(!o){o=document.createElement("div");o.id="infoOv";o.className="ov";o.innerHTML='<div class="ovc" id="infoBody"></div>';document.body.appendChild(o);o.onclick=e=>{if(e.target===o)o.classList.remove("on")}}
+ $("#infoBody").innerHTML=html+'<div class="ovb"><button class="cb go" id="infoClose">הבנתי</button></div>';o.classList.add("on");$("#infoClose").onclick=()=>o.classList.remove("on")}
+async function doInstall(){stat("install_click");if(DEFER_INSTALL){DEFER_INSTALL.prompt();try{await DEFER_INSTALL.userChoice}catch(e){}DEFER_INSTALL=null;return}
+ if(isIOS())return infoOv('<div class="end-k">📲 הוספה למסך הבית באייפון</div><ol class="howto"><li>לוחצים על כפתור השיתוף <b>⬆️</b> בתחתית ספארי</li><li>גוללים ובוחרים <b>״הוספה למסך הבית״</b></li><li>לוחצים <b>״הוסף״</b> – וזהו, יש אייקון כמו לאפליקציה</li></ol><div class="muted">צריך לפתוח את הקישור בספארי (לא מתוך וואטסאפ או אינסטגרם)</div>');
+ infoOv('<div class="end-k">📲 הוספה למסך הבית</div><ol class="howto"><li>פותחים את התפריט של הדפדפן <b>⋮</b></li><li>בוחרים <b>״הוספה למסך הבית״</b> או <b>״התקנת אפליקציה״</b></li></ol><div class="muted">אם פתחתם מתוך וואטסאפ או אינסטגרם – קודם ״פתיחה בדפדפן״</div>')}
+const SITE="https://edushow.co.il/nba-quiz/";
+function shareLink(src){const r=LASTRES||{};return `${SITE}?t=${r.tier||ST.tier}&lvl=${r.lvl!=null?r.lvl:ST.lvl}${r.short?"&short=1":""}&src=${src}`}
+function shareText(){const r=LASTRES,tn=TIERS.find(x=>x.id===r.tier).n,an=AIL[r.lvl].short;
+ return (r.win?`🏆 ניצחתי את ${an} ${r.me}–${r.ai}`:r.tie?`🤝 תיקו ${r.me}–${r.ai} מול ${an}`:`😤 הפסדתי ל${an} ${r.me}–${r.ai}`)+` בחידון ה-NBA הגדול (רמת ${tn}).\nתצליחו יותר? 🏀`}
+async function resultImage(){const r=LASTRES,W=1080,H=1920,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
+ try{await document.fonts.load('900 80px Rubik');await document.fonts.load('800 40px Rubik')}catch(e){}
+ const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,"#18214a");g.addColorStop(1,"#06080f");x.fillStyle=g;x.fillRect(0,0,W,H);
+ x.strokeStyle="rgba(255,140,40,.16)";x.lineWidth=8;x.beginPath();x.arc(W/2,H+60,560,Math.PI,2*Math.PI);x.stroke();x.beginPath();x.moveTo(0,H-500);x.lineTo(W,H-500);x.stroke();
+ const B=(cx,cy,rad)=>{const gr=x.createRadialGradient(cx-rad*.3,cy-rad*.4,rad*.1,cx,cy,rad);gr.addColorStop(0,"#ffb066");gr.addColorStop(.5,"#ff8c28");gr.addColorStop(1,"#c85a0c");x.fillStyle=gr;x.beginPath();x.arc(cx,cy,rad,0,7);x.fill();
+  x.save();x.beginPath();x.arc(cx,cy,rad,0,7);x.clip();x.strokeStyle="#3a1a04";x.lineWidth=rad*.05;x.beginPath();x.moveTo(cx,cy-rad);x.lineTo(cx,cy+rad);x.moveTo(cx-rad,cy);x.lineTo(cx+rad,cy);x.stroke();
+  x.beginPath();x.ellipse(cx-rad*1.05,cy,rad*.75,rad*1.1,0,0,7);x.stroke();x.beginPath();x.ellipse(cx+rad*1.05,cy,rad*.75,rad*1.1,0,0,7);x.stroke();x.restore()};
+ x.direction="rtl";x.textAlign="center";x.fillStyle="#ff8c28";x.font="900 84px Rubik, sans-serif";x.fillText("חידון ה-NBA הגדול",W/2,200);
+ B(W/2,440,150);
+ x.fillStyle="#fff";x.font="900 88px Rubik, sans-serif";x.fillText(r.win?`ניצחתי את ${AIL[r.lvl].short}!`:r.tie?"תיקו!":`הפסדתי ל${AIL[r.lvl].short}`,W/2,760);
+ x.direction="ltr";x.font="900 230px Rubik, sans-serif";x.fillStyle=r.win?"#ffc83d":"#fff";x.fillText(`${r.me}–${r.ai}`,W/2,1010);x.direction="rtl";
+ x.fillStyle="#b9c3e6";x.font="800 52px Rubik, sans-serif";x.fillText(`${r.name} · רמת ${TIERS.find(t=>t.id===r.tier).n}${r.short?" · משחק קצר":""}`,W/2,1120);
+ x.fillStyle="#fff";x.font="900 76px Rubik, sans-serif";x.fillText("תצליחו לנצח אותי? 👇",W/2,1560);
+ x.fillStyle="#ff8c28";x.font="800 58px Rubik, sans-serif";x.direction="ltr";x.fillText("edushow.co.il/nba-quiz",W/2,1680);
+ return new Promise(res=>c.toBlob(b=>res(b),"image/png"))}
+async function shareResult(){if(!LASTRES)return;stat("share");const text=shareText(),url=shareLink("share");
+ try{const b=await resultImage();const f=b&&new File([b],"nba-quiz.png",{type:"image/png"});
+  if(f&&navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],text:text+"\n"+url});return}
+  if(navigator.share){await navigator.share({text,url});return}}catch(e){if(e&&e.name==="AbortError")return}
+ open("https://wa.me/?text="+encodeURIComponent(text+"\n"+url),"_blank")}
+document.addEventListener("click",e=>{if(e.target.closest("#eShare"))shareResult()});
+/* deep links: ?t=rookie|mid|max &lvl=0-3 &short=1 &src=xxx */
+(function(){try{const q=new URLSearchParams(location.search);let ch=false;const t=q.get("t");if(t&&TIERS.some(x=>x.id===t&&!x.soon)){ST.tier=t;ch=true}
+ const l=q.get("lvl");if(l!==null&&/^[0-3]$/.test(l)){ST.lvl=+l;ch=true}if(q.has("short")){ST.short=q.get("short")!=="0";ch=true}
+ if(ch){store.set("settings",ST);if(!G&&$("#v-setup"))renderSetup()}
+ const s=(q.get("src")||"").toLowerCase().replace(/[^a-z_]/g,"").slice(0,14);let seen=null;try{seen=sessionStorage.getItem("nbaSrc")}catch(e){}
+ if(s&&!seen){try{sessionStorage.setItem("nbaSrc",s)}catch(e){}stat("src_"+s)}
+ if(isStandalone()&&!seen){try{sessionStorage.setItem("nbaSrc","pwa")}catch(e){}stat("pwa_open")}
+ if("serviceWorker" in navigator&&location.hostname.endsWith("edushow.co.il"))navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}})();
 </script>
 </body>
 </html>
