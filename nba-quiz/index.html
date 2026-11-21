@@ -2075,7 +2075,7 @@ const TEAMC={ATL:"#c8102e",BOS:"#007a33",BKN:"#111",CHA:"#1d1160",CHI:"#ce1141",
 SFX.buzz=function(){tone(880,0,.12,{type:"square",vol:.08,perc:1});tone(1320,.1,.18,{type:"square",vol:.07,perc:1})};
 
 /* ================= text matching ================= */
-function norm(s){return String(s||"").toLowerCase().replace(/[֑-ׇ]/g,"").replace(/[ךםןףץ]/g,c=>({"ך":"כ","ם":"מ","ן":"נ","ף":"פ","ץ":"צ"}[c])).replace(/['"׳״`´’‘“”\-–—_.,!?()\[\]:;\s]/g,"").replace(/וו/g,"ו").replace(/יי/g,"י")}
+function norm(s){return String(s||"").toLowerCase().replace(/[֑-ׇ]/g,"").replace(/[ךםןףץ]/g,c=>({"ך":"כ","ם":"מ","ן":"נ","ף":"פ","ץ":"צ"}[c])).replace(/['"׳״`´’‘“”ʼʹ′″‛＇‚„\-–—_.,!?()\[\]:;\s]/g,"").replace(/וו/g,"ו").replace(/יי/g,"י")}
 function lev(a,b){if(a===b)return 0;const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=Array.from({length:n+1},(_,i)=>i);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]}
 function nums(s){return(String(s).match(/\d+(\.\d+)?/g)||[]).map(Number)}
 function toksOf(s){return String(s||"").split(/[\s\-–—_,.\/]+/).map(norm).filter(Boolean)}
@@ -2101,7 +2101,7 @@ function knownClash(text,aliases){if(typeof PL==="undefined")return false;const 
  return !(aliases||[]).some(a=>pt.includes(norm(a))||(toksOf(a).length>1&&matchOne(text,a,true)))}
 function okAns(text,aliases){return matchAny(text,aliases)&&!knownClash(text,aliases)}
 function okQ(text,q){const al=[q.a].concat(q.acc||[]).filter(Boolean);return okAns(text,al)}
-function findItem(list,text,exclude){for(const st of ["exact",true,false])for(let i=0;i<list.length;i++){if(exclude&&exclude.includes(i))continue;if(matchAny(text,itemParts(list[i]),st)&&!knownClash(text,itemParts(list[i])))return i}return -1}
+function findItem(list,text,exclude){for(const st of ["exact",true,false]){let best=-1,bd=1e9;for(let i=0;i<list.length;i++){if(exclude&&exclude.includes(i))continue;if(matchAny(text,itemParts(list[i]),st)&&!knownClash(text,itemParts(list[i]))){if(st!==false)return i;const x=norm(text),d=Math.min(...itemParts(list[i]).map(q=>lev(x,norm(q))));if(d<bd){bd=d;best=i}}}if(best>=0)return best}return -1}
 function optsOf(h){return String(h||"").includes("|")?h.split("|").map(x=>x.trim()).filter(Boolean):null}
 /* plausible wrong answers for the computer: same kind of answer (player / team / country / number), from the same category */
 const COUNTRIES=["ארה״ב","קנדה","צרפת","ספרד","סרביה","סלובניה","קרואטיה","ליטא","לטביה","יוון","גרמניה","איטליה","טורקיה","ניגריה","קמרון","אוסטרליה","ניו זילנד","ארגנטינה","ברזיל","סין","יפן","פינלנד","שוויץ","אוסטריה","הולנד","בלגיה","רוסיה","ישראל","הרפובליקה הדומיניקנית","פוארטו ריקו","דרום אפריקה","קונגו","סנגל","מונטנגרו","בוסניה","גאנה","קניה","שוודיה","אנגליה","מקסיקו","ג'מייקה"];
