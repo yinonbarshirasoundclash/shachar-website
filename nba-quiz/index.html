@@ -554,6 +554,7 @@ body.kb .inpbtns .cb{padding:4px 10px;font-size:13px}
 .dly .dtime{position:relative;height:10px;border-radius:9px;background:#2a3566;margin:12px 0 0;overflow:visible}.dly .dtime i{position:absolute;inset:0 0 0 auto;width:100%;border-radius:9px;background:linear-gradient(90deg,#c92a2a,#ffb35c,#2f9e44)}
 .dly .dtime span{position:absolute;left:-2px;top:-24px;font-weight:900;font-size:15px;color:var(--gold)}
 .dly .dpts{font-weight:900;font-size:18px;margin:-6px 0 10px}.dly .dpts.ok{color:#51cf66}.dly .dpts.no{color:#ff6b6b}
+.dly .dnames{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:8px 0}.dly .dnames span{background:#141c3d;border:1px solid var(--line);border-radius:20px;padding:4px 10px;font-size:14px;font-weight:700}.dly .dnames span.me{border-color:#ffb35c;color:#ffb35c}.dly .dlg small{color:var(--gold);font-weight:700}
 </style>
 </head>
 <body>
@@ -3479,7 +3480,7 @@ async function lbAll(){const ov=$("#allOv"),b=$("#allBody");ov.classList.add("on
 function goSetup(){if(NET.role)netLeave();if(G)G.tok++;G=null;closeInput();sceneOff();$("#app").classList.remove("ingame");show("setup");renderSetup()}
 function renderSetup(){const v=$("#v-setup");
  v.innerHTML=`<div class="hero"><div class="t">חידון ה-NBA הגדול</div><div class="s">אתה מול המחשב. 7 קטגוריות, 3 משימות, בלי רחמים.</div></div>
-${(()=>{const d=dState();return `<button class="dbtn ${d.doneToday?"done":""}" id="dailyBtn"><span class="dt">📅 האתגר היומי</span><span class="ds">${d.doneToday?`שיחקת היום: ${dSquares(d.s.ans)}${d.s.streak>1?` · 🔥 ${d.s.streak}`:""}`:"5 שאלות על מה שקורה בליגה עכשיו · 2 דקות"}</span></button>${DL_ON()?`<button class="dlink" id="dLeagueBtn">🏆 טבלת ליגת האתגר היומי</button>`:""}`})()}
+${(()=>{const d=dState();return `<button class="dbtn ${d.doneToday?"done":""}" id="dailyBtn"><span class="dt">📅 האתגר היומי</span><span class="ds">${d.doneToday?`שיחקת היום: ${dSquares(d.s.ans)}${d.s.streak>1?` · 🔥 ${d.s.streak}`:""}`:"5 שאלות על מה שקורה בליגה עכשיו · 2 דקות"}</span></button>${DL_ON()?`<button class="dlink" id="dLeagueBtn">${dReg()?"🏆 טבלת ליגת האתגר היומי":dTrial()?"📝 הרשמה לליגה – מתחילה מחר ב-10:00":"🏆 הצטרפות לליגה וטבלה"}</button>`:""}`})()}
 <div class="card"><div class="lbl">השם שלך</div><input id="pName" class="tname" maxlength="14" placeholder="שם פרטי או כינוי" value="${esc(ST.name)}"><div class="sws">${SWC.map(c=>`<button class="sw ${c===ST.color?"on":""}" data-sw="${c}" style="--s:${c}"></button>`).join("")}</div></div>
 <div class="card"><div class="lbl">רמת השאלות</div><div class="tiers">${TIERS.map(t=>`<button class="tier ${ST.tier===t.id?"on":""} ${t.soon?"soon":""}" data-tier="${t.id}" ${t.soon?"disabled":""}><b>${t.n}</b><small>${t.soon?"בקרוב":t.d}</small></button>`).join("")}</div></div>
 <div class="card"><div class="lbl">היריב שלך</div><div class="opps">${AIL.map((a,i)=>`<button class="opp ${ST.lvl===i?"on":""} ${i===3?"goat":""}" data-lvl="${i}" style="--oc:${a.color}"><span class="oav"><svg viewBox="22 4 56 58">${playerInner({name:a.short,color:a.color},AIFACE[i],false)}</svg></span><span class="otx"><b>${esc(a.name)}</b><small>${esc(a.desc)}</small></span><span class="ost">${"★".repeat(a.stars)}${"☆".repeat(4-a.stars)}</span></button>`).join("")}</div></div>
@@ -3600,9 +3601,10 @@ document.addEventListener("click",e=>{if(e.target.closest("#eShare"))shareResult
  if("serviceWorker" in navigator&&location.hostname.endsWith("edushow.co.il"))navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}})();
 
 /* ===================== DAILY CHALLENGE: 5 questions, same for everyone each day ===================== */
-const DAILY_EPOCH="2026-11-25";
+function LEAGUE0(){return "2026-11-26"}function dTrial(day){return (day||dDay())<LEAGUE0()}
+function dTitle(day){return dTrial(day)?"📅 האתגר היומי · יום ניסיון":`📅 האתגר היומי #${dNum(day)}`}
 function dDay(t){return statDay(new Date((t||Date.now())-10*3600e3))}
-function dNum(d){const a=new Date(DAILY_EPOCH+"T12:00:00"),b=new Date(d+"T12:00:00");return Math.round((b-a)/864e5)+1}
+function dNum(d){const a=new Date(LEAGUE0()+"T12:00:00"),b=new Date(d+"T12:00:00");return Math.round((b-a)/864e5)+1}
 function dRng(seed){let h=1779033703^seed.length;for(let i=0;i<seed.length;i++){h=Math.imul(h^seed.charCodeAt(i),3432918353);h=h<<13|h>>>19}
  let a=h>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function dPool(tier,lv){const o=[];(SETS[tier]||[]).forEach(s=>s.qs.forEach(r=>{const x=r[lv];if(x&&x.t==="open"){const op=optsOf(x.h);if(op&&op.length===4&&op.some(z=>norm(z)===norm(x.a))&&!/הקודמת|הבאה|השנה|העונה הזו|כרגע/.test(x.q))o.push(x)}}));return o}
@@ -3616,7 +3618,7 @@ function dLoad(){try{return JSON.parse(localStorage.getItem("nbaDaily")||"{}")}c
 function dSave(o){try{localStorage.setItem("nbaDaily",JSON.stringify(o))}catch(e){}}
 function dState(){const d=dDay(),s=dLoad();return {day:d,s,doneToday:s.day===d&&s.done}}
 function dSquares(ans){return ans.map(a=>a?"🟩":"🟥").join("")}
-function dShareText(s){return `📅 האתגר היומי של חידון ה-NBA #${dNum(s.day)}\n${dSquares(s.ans)} ${s.total!=null?s.total+" נק׳":s.ans.filter(Boolean).length+"/5"}${s.streak>1?` · 🔥 ${s.streak} ימים ברצף`:""}\nתצליחו יותר? 🏀`}
+function dShareText(s){return `📅 האתגר היומי של חידון ה-NBA ${dTrial(s.day)?"(יום ניסיון)":"#"+dNum(s.day)}\n${dSquares(s.ans)} ${s.total!=null?s.total+" נק׳":s.ans.filter(Boolean).length+"/5"}${s.streak>1?` · 🔥 ${s.streak} ימים ברצף`:""}\nתצליחו יותר? 🏀`}
 async function dShare(){const s=dLoad();if(!s.done)return;stat("daily_share");const text=dShareText(s),url=SITE+"?daily=1&src=daily";
  try{if(navigator.share){await navigator.share({text,url});return}}catch(e){if(e&&e.name==="AbortError")return}
  open("https://wa.me/?text="+encodeURIComponent(text+"\n"+url),"_blank")}
@@ -3624,7 +3626,7 @@ function dOv(){let o=$("#dailyOv");if(!o){o=document.createElement("div");o.id="
 function dClose(){const o=$("#dailyOv");if(o)o.classList.remove("on");if($("#v-setup")&&$("#v-setup").classList.contains("on"))renderSetup()}
 function dLeft(){const n=new Date(),m=new Date(n);m.setHours(10,0,0,0);if(m<=n)m.setDate(m.getDate()+1);const s=Math.max(0,Math.floor((m-n)/1000));return `${Math.floor(s/3600)}:${String(Math.floor(s%3600/60)).padStart(2,"0")}`}
 function dResult(){const s=dLoad(),b=dOv(),k=s.ans.filter(Boolean).length,msg=["אוי. מחר יום חדש 😅","מתחילים מאיפשהו 💪","חצי כוס מלאה 🙂","יפה מאוד! 👏","כמעט מושלם! 🔥","מושלם! אתה חי את הליגה 🐐"][k];
- b.innerHTML=`<div class="end-k">📅 האתגר היומי #${dNum(s.day)}</div><div class="dsq">${dSquares(s.ans)}</div><div class="dsc">${s.total!=null?s.total+" נק׳":k+"/5"}</div><div class="muted">${k}/5 תשובות נכונות${s.time?` · ⏱️ ${Math.round(s.time)} שניות`:""}</div><div class="dmsg">${msg}</div>
+ b.innerHTML=`<div class="end-k">${dTitle(s.day)}</div><div class="dsq">${dSquares(s.ans)}</div><div class="dsc">${s.total!=null?s.total+" נק׳":k+"/5"}</div><div class="muted">${k}/5 תשובות נכונות${s.time?` · ⏱️ ${Math.round(s.time)} שניות`:""}</div><div class="dmsg">${msg}</div>
  <div class="dstats"><div><b>${s.streak||1}</b><small>🔥 ימים ברצף</small></div><div><b>${s.played||1}</b><small>אתגרים</small></div><div><b>${s.best||0}</b><small>הרצף הכי ארוך</small></div></div>
  <div class="drev">${(s.rev||[]).map((r,i)=>`<div class="${s.ans[i]?"ok":"no"}"><span>${s.ans[i]?"✅":"❌"}</span> ${esc(r.q)}<b>${esc(r.a)}</b>${r.ex?`<small>${esc(r.ex)}</small>`:""}</div>`).join("")}</div>
  ${dLeagueBox()}
@@ -3634,7 +3636,7 @@ function dResult(){const s=dLoad(),b=dOv(),k=s.ans.filter(Boolean).length,msg=["
 async function dailyOpen(){const st=dState();if(st.doneToday)return dResult();
  const b0=dOv();b0.innerHTML='<div class="end-k">📅 האתגר היומי</div><div class="dq">טוען את השאלות של היום…</div>';const live=await dLive(st.day);const Q=live||dailyQs(st.day);stat(live?"daily_live":"daily_bank");if(Q.length<5){toast("האתגר היומי לא זמין כרגע");return}
  stat("daily_start");let i=0;const ans=[];const b=dOv();
- let tsum=0,t0=0,tmr=null;const pts=[];const DT=20;const draw=()=>{const x=Q[i];t0=performance.now();clearInterval(tmr);b.innerHTML=`<div class="end-k">📅 האתגר היומי #${dNum(st.day)} · שאלה ${i+1}/5</div><div class="dprog">${Q.map((_,j)=>`<i class="${j<i?(ans[j]?"ok":"no"):j===i?"cur":""}"></i>`).join("")}</div><div class="dtime"><i id="dBar"></i><span id="dSec">${DT}</span></div><div class="dq">${esc(x.q)}</div><div class="dopts">${x.opts.map((o,j)=>`<button class="cb dopt" data-o="${j}">${esc(o)}</button>`).join("")}</div><div class="muted dlvl">${x.t==="live"?esc(x.tag):{rookie:"🟢 רוקי",mid:"🟡 מיד",max:"🔴 מקס"}[x.t]}</div>`;
+ let tsum=0,t0=0,tmr=null;const pts=[];const DT=20;const draw=()=>{const x=Q[i];t0=performance.now();clearInterval(tmr);b.innerHTML=`<div class="end-k">${dTitle(st.day)} · שאלה ${i+1}/5</div><div class="dprog">${Q.map((_,j)=>`<i class="${j<i?(ans[j]?"ok":"no"):j===i?"cur":""}"></i>`).join("")}</div><div class="dtime"><i id="dBar"></i><span id="dSec">${DT}</span></div><div class="dq">${esc(x.q)}</div><div class="dopts">${x.opts.map((o,j)=>`<button class="cb dopt" data-o="${j}">${esc(o)}</button>`).join("")}</div><div class="muted dlvl">${x.t==="live"?esc(x.tag):{rookie:"🟢 רוקי",mid:"🟡 מיד",max:"🔴 מקס"}[x.t]}</div>`;
   const bar=$("#dBar");requestAnimationFrame(()=>{bar.style.transition=`width ${DT}s linear`;bar.style.width="0%"});
   tmr=setInterval(()=>{const el=(performance.now()-t0)/1000,left=Math.max(0,Math.ceil(DT-el));const sc=$("#dSec");if(sc)sc.textContent=left;if(el>=DT){clearInterval(tmr);answer(null)}},200);
   const answer=btn=>{if(b.dataset.lock==="1")return;b.dataset.lock="1";clearInterval(tmr);const el=Math.min(DT,(performance.now()-t0)/1000);const pick=btn?x.opts[+btn.dataset.o]:null,ok=pick===x.a;ans.push(ok);tsum+=el;const p=ok?Math.max(30,Math.round(100-el*3.5)):0;pts.push(p);const bb=$("#dBar");if(bb){bb.style.transition="none";bb.style.width=getComputedStyle(bb).width}
@@ -3653,8 +3655,8 @@ function DL_ON(){return !!(FB_CFG||NETLOCAL)}
 function dUid(){let u=null;try{u=localStorage.getItem("nbaUid")}catch(e){}if(!u){u="u"+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);try{localStorage.setItem("nbaUid",u)}catch(e){}}return u}
 function dReg(){try{return JSON.parse(localStorage.getItem("nbaLeague")||"null")}catch(e){return null}}
 function dBoard(day){return "dpts_"+day}
-function dDays(n){const out=[];for(let k=0;k<n;k++){const s=dDay(Date.now()-k*864e5);if(s<DAILY_EPOCH)break;out.push(s)}return out}
-async function dSubmit(){const r=dReg(),s=dLoad();if(!r||!s.done||s.sent===s.day||!DL_ON())return;
+function dDays(n){const out=[];for(let k=0;k<n;k++){const s=dDay(Date.now()-k*864e5);if(s<LEAGUE0())break;out.push(s)}return out}
+async function dSubmit(){const r=dReg(),s=dLoad();if(!r||!s.done||s.sent===s.day||!DL_ON()||dTrial(s.day))return;
  try{const db=await netDB();const ref=db.ref(`lb/${dBoard(s.day)}/${dUid()}`);const ex=await ref.once("value");
   if(!ex.exists())await ref.set({name:r.name,score:s.total!=null?s.total:s.ans.filter(Boolean).length*50,ok:s.ans.filter(Boolean).length,time:Math.round((s.time||999)*10)/10,ans:s.ans.map(a=>a?1:0).join(""),date:Date.now()});
   s.sent=s.day;dSave(s);stat("league_submit")}catch(e){}}
@@ -3668,16 +3670,23 @@ async function dTable(range){const days=range==="day"?dDays(1):range==="week"?dD
  snaps.forEach(b=>Object.entries(b).forEach(([u,v])=>{if(!v)return;const a=agg[u]||(agg[u]={u,name:v.name,pts:0,days:0,time:0,perfect:0});a.pts+=+v.score||0;a.days++;a.time+=+v.time||0;a.ok=(a.ok||0)+(+v.ok||0);if(+v.ok===5)a.perfect++;a.name=v.name}));
  return Object.values(agg).sort((a,b)=>b.pts-a.pts||a.time-b.time)}
 function dLeagueBox(){if(!DL_ON())return "";const r=dReg();
- if(r)return `<div class="dlg"><div>🏆 אתם בליגה בתור <b>${esc(r.name)}</b><span id="dRank"></span></div><button class="cb" id="dTblB">טבלת הליגה</button></div>`;
- return `<div class="dlg join"><div class="dlt">🏆 הצטרפו לליגת האתגר היומי</div><div class="muted">כל יום שתשחקו נכנס לטבלה – מי יוביל את החודש?</div><div class="dlr"><input id="dRegN" class="tname" maxlength="14" placeholder="כינוי לטבלה"><button class="cb go" id="dRegB">הצטרפות</button></div><div id="dRegM" class="muted"></div></div>`}
+ if(r)return `<div class="dlg"><div>🏆 אתם בליגה בתור <b>${esc(r.name)}</b>${dTrial()?"<br><small>הליגה מתחילה מחר ב-10:00 – היום רק ניסיון</small>":""}<span id="dRank"></span></div><button class="cb" id="dTblB">טבלת הליגה</button></div>`;
+ return `<div class="dlg join"><div class="dlt">🏆 הצטרפו לליגת האתגר היומי</div><div class="muted">${dTrial()?"הליגה מתחילה מחר ב-10:00 בבוקר – הירשמו עכשיו, ומהאתגר הראשון כל נקודה נספרת":"כל יום שתשחקו נכנס לטבלה – מי יוביל את החודש?"}</div><div class="dlr"><input id="dRegN" class="tname" maxlength="14" placeholder="כינוי לטבלה"><button class="cb go" id="dRegB">הצטרפות</button></div><div id="dRegM" class="muted"></div></div>`}
 function dWireLeague(){const b=$("#dRegB");if(b)b.onclick=async()=>{b.disabled=true;const m=await dRegister($("#dRegN").value);b.disabled=false;if(m){$("#dRegM").textContent=m;return}toast("נרשמת לליגה! 🏆","#2f9e44");dResult()};
  const t=$("#dTblB");if(t)t.onclick=()=>dShowTable("day");
  const rk=$("#dRank");if(rk&&dReg()&&dLoad().done)dTable("day").then(L=>{const i=L.findIndex(x=>x.u===dUid());if(i>=0)rk.textContent=` · המקום שלך היום: ${i+1} מתוך ${L.length}`}).catch(()=>{})}
-async function dShowTable(range){const b=dOv();const tabs=[["day","היום"],["week","השבוע"],["all","כל הזמנים"]];
+async function dShowTable(range){const b=dOv();if(dTrial())return dShowRegistered();const tabs=[["day","היום"],["week","השבוע"],["all","כל הזמנים"]];
  b.innerHTML=`<div class="end-k">🏆 ליגת האתגר היומי</div><div class="dtabs">${tabs.map(([k,n])=>`<button class="cb ${k===range?"go":""}" data-rg="${k}">${n}</button>`).join("")}</div><div id="dTbl" class="dtbl"><div class="muted">טוען…</div></div><div class="ovb"><button class="cb" id="dBackB">חזרה</button></div>`;
  $$("#dlyBody [data-rg]").forEach(x=>x.onclick=()=>dShowTable(x.dataset.rg));$("#dBackB").onclick=()=>dLoad().done&&dLoad().day===dDay()?dResult():dClose();
  try{const L=await dTable(range),me=dUid();const top=L.slice(0,50);const mi=L.findIndex(x=>x.u===me);
   $("#dTbl").innerHTML=L.length?`<table><tr><th>#</th><th>שם</th><th>נק'</th><th>${range==="day"?"✔":"ימים"}</th></tr>${top.map((x,i)=>`<tr class="${x.u===me?"me":""}"><td>${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}</td><td>${esc(x.name)}${x.perfect&&range!=="day"?` <small>⭐${x.perfect}</small>`:""}</td><td>${x.pts}</td><td>${range==="day"?x.ok+"/5":x.days}</td></tr>`).join("")}${mi>=50?`<tr class="me"><td>${mi+1}</td><td>${esc(L[mi].name)}</td><td>${L[mi].pts}</td><td>${range==="day"?L[mi].ok+"/5":L[mi].days}</td></tr>`:""}</table><div class="muted">תשובה נכונה = עד 100 נק׳ לפי המהירות (20 שניות לשאלה)${range!=="day"?" · ⭐ = יום מושלם":""}</div>`:`<div class="muted">עוד אין תוצאות ${range==="day"?"היום":""} – היו הראשונים!</div>`}catch(e){$("#dTbl").innerHTML='<div class="muted">אין חיבור כרגע</div>'}}
+
+async function dShowRegistered(){const b=dOv();const r=dReg();
+ b.innerHTML=`<div class="end-k">🏆 ליגת האתגר היומי</div><div class="dmsg">הליגה מתחילה מחר ב-10:00 ⏰</div><div class="muted">היום זה יום ניסיון – הנקודות עוד לא נספרות.</div>${r?"":`<div class="dlg join"><div class="dlr"><input id="dRegN" class="tname" maxlength="14" placeholder="כינוי לטבלה"><button class="cb go" id="dRegB">הרשמה</button></div><div id="dRegM" class="muted"></div></div>`}<div id="dTbl" class="dtbl"><div class="muted">טוען…</div></div><div class="ovb"><button class="cb" id="dBackB">חזרה</button></div>`;
+ $("#dBackB").onclick=dClose;const rb=$("#dRegB");if(rb)rb.onclick=async()=>{rb.disabled=true;const m=await dRegister($("#dRegN").value);rb.disabled=false;if(m){$("#dRegM").textContent=m;return}toast("נרשמת לליגה! 🏆","#2f9e44");dShowRegistered()};
+ try{const db=await netDB();const all=(await db.ref("lb/dplayers").once("value")).val()||{};const me=dUid();const L=Object.entries(all).map(([u,v])=>({u,name:v&&v.name,date:v&&v.date||0})).filter(x=>x.name).sort((a,b)=>a.date-b.date);
+  $("#dTbl").innerHTML=`<div class="dmsg">נרשמו עד עכשיו: ${L.length} 🏀</div><div class="dnames">${L.map(x=>`<span class="${x.u===me?"me":""}">${esc(x.name)}</span>`).join("")}</div>`}catch(e){$("#dTbl").innerHTML='<div class="muted">אין חיבור כרגע</div>'}}
+function dOpenReg(){dShowRegistered()}
 </script>
 </body>
 </html>
