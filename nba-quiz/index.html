@@ -3601,6 +3601,7 @@ document.addEventListener("click",e=>{if(e.target.closest("#eShare"))shareResult
 
 /* ===================== DAILY CHALLENGE: 5 questions, same for everyone each day ===================== */
 const DAILY_EPOCH="2026-11-25";
+function dDay(t){return statDay(new Date((t||Date.now())-10*3600e3))}
 function dNum(d){const a=new Date(DAILY_EPOCH+"T12:00:00"),b=new Date(d+"T12:00:00");return Math.round((b-a)/864e5)+1}
 function dRng(seed){let h=1779033703^seed.length;for(let i=0;i<seed.length;i++){h=Math.imul(h^seed.charCodeAt(i),3432918353);h=h<<13|h>>>19}
  let a=h>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
@@ -3613,7 +3614,7 @@ async function dLive(day){try{if(!/^https?:/.test(location.protocol))return null
  return Q.map(x=>{const op=x.opts.slice();for(let i=op.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[op[i],op[j]]=[op[j],op[i]]}return {q:String(x.q),a:String(x.a),opts:op.map(String),t:"live",tag:String(x.tag||"🗓️ מהלילה"),ex:x.ex?String(x.ex):""}})}catch(e){return null}}
 function dLoad(){try{return JSON.parse(localStorage.getItem("nbaDaily")||"{}")}catch(e){return{}}}
 function dSave(o){try{localStorage.setItem("nbaDaily",JSON.stringify(o))}catch(e){}}
-function dState(){const d=statDay(),s=dLoad();return {day:d,s,doneToday:s.day===d&&s.done}}
+function dState(){const d=dDay(),s=dLoad();return {day:d,s,doneToday:s.day===d&&s.done}}
 function dSquares(ans){return ans.map(a=>a?"🟩":"🟥").join("")}
 function dShareText(s){return `📅 האתגר היומי של חידון ה-NBA #${dNum(s.day)}\n${dSquares(s.ans)} ${s.total!=null?s.total+" נק׳":s.ans.filter(Boolean).length+"/5"}${s.streak>1?` · 🔥 ${s.streak} ימים ברצף`:""}\nתצליחו יותר? 🏀`}
 async function dShare(){const s=dLoad();if(!s.done)return;stat("daily_share");const text=dShareText(s),url=SITE+"?daily=1&src=daily";
@@ -3621,7 +3622,7 @@ async function dShare(){const s=dLoad();if(!s.done)return;stat("daily_share");co
  open("https://wa.me/?text="+encodeURIComponent(text+"\n"+url),"_blank")}
 function dOv(){let o=$("#dailyOv");if(!o){o=document.createElement("div");o.id="dailyOv";o.className="ov";o.innerHTML='<div class="ovc dly" id="dlyBody"></div>';document.body.appendChild(o)}o.classList.add("on");return $("#dlyBody")}
 function dClose(){const o=$("#dailyOv");if(o)o.classList.remove("on");if($("#v-setup")&&$("#v-setup").classList.contains("on"))renderSetup()}
-function dLeft(){const n=new Date(),m=new Date(n);m.setHours(24,0,0,0);const s=Math.max(0,Math.floor((m-n)/1000));return `${Math.floor(s/3600)}:${String(Math.floor(s%3600/60)).padStart(2,"0")}`}
+function dLeft(){const n=new Date(),m=new Date(n);m.setHours(10,0,0,0);if(m<=n)m.setDate(m.getDate()+1);const s=Math.max(0,Math.floor((m-n)/1000));return `${Math.floor(s/3600)}:${String(Math.floor(s%3600/60)).padStart(2,"0")}`}
 function dResult(){const s=dLoad(),b=dOv(),k=s.ans.filter(Boolean).length,msg=["אוי. מחר יום חדש 😅","מתחילים מאיפשהו 💪","חצי כוס מלאה 🙂","יפה מאוד! 👏","כמעט מושלם! 🔥","מושלם! אתה חי את הליגה 🐐"][k];
  b.innerHTML=`<div class="end-k">📅 האתגר היומי #${dNum(s.day)}</div><div class="dsq">${dSquares(s.ans)}</div><div class="dsc">${s.total!=null?s.total+" נק׳":k+"/5"}</div><div class="muted">${k}/5 תשובות נכונות${s.time?` · ⏱️ ${Math.round(s.time)} שניות`:""}</div><div class="dmsg">${msg}</div>
  <div class="dstats"><div><b>${s.streak||1}</b><small>🔥 ימים ברצף</small></div><div><b>${s.played||1}</b><small>אתגרים</small></div><div><b>${s.best||0}</b><small>הרצף הכי ארוך</small></div></div>
@@ -3641,7 +3642,7 @@ async function dailyOpen(){const st=dState();if(st.doneToday)return dResult();
    $$("#dlyBody .dopt").forEach(z=>{const v=x.opts[+z.dataset.o];if(v===x.a)z.classList.add("ok");else if(z===btn)z.classList.add("no");z.disabled=true});
    if(x.ex){const e=document.createElement('div');e.className='dex';e.textContent=x.ex;$('#dlyBody').appendChild(e)}setTimeout(()=>{b.dataset.lock="";i++;if(i<5)draw();else finish()},(ok?900:1700)+(x.ex?1600:0))};
   $$("#dlyBody .dopt").forEach(btn=>btn.onclick=()=>answer(btn))};
- const finish=()=>{const s=dLoad(),y=new Date();y.setDate(y.getDate()-1);const yd=statDay(y);
+ const finish=()=>{const s=dLoad(),yd=dDay(Date.now()-864e5);
   const streak=s.day===yd&&s.done?(s.streak||1)+1:1;const o={day:st.day,done:true,time:Math.round(tsum*10)/10,pts,total:pts.reduce((a,c)=>a+c,0),ans,rev:Q.map(x=>({q:x.q,a:x.a,ex:x.ex||""})),live:!!live,streak,best:Math.max(s.best||0,streak),played:(s.played||0)+1};dSave(o);stat("daily_end");stat("daily_"+ans.filter(Boolean).length);dResult();dSubmit().then(()=>{const rk=$("#dRank");if(rk)dWireLeague()})};
  draw()}
 document.addEventListener("click",e=>{if(e.target.closest("#dailyBtn"))dailyOpen();if(e.target.closest("#dLeagueBtn"))dShowTable("all")});
@@ -3652,7 +3653,7 @@ function DL_ON(){return !!(FB_CFG||NETLOCAL)}
 function dUid(){let u=null;try{u=localStorage.getItem("nbaUid")}catch(e){}if(!u){u="u"+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);try{localStorage.setItem("nbaUid",u)}catch(e){}}return u}
 function dReg(){try{return JSON.parse(localStorage.getItem("nbaLeague")||"null")}catch(e){return null}}
 function dBoard(day){return "dpts_"+day}
-function dDays(n){const out=[],t=new Date();for(let k=0;k<n;k++){const d=new Date(t);d.setDate(d.getDate()-k);const s=statDay(d);if(s<DAILY_EPOCH)break;out.push(s)}return out}
+function dDays(n){const out=[];for(let k=0;k<n;k++){const s=dDay(Date.now()-k*864e5);if(s<DAILY_EPOCH)break;out.push(s)}return out}
 async function dSubmit(){const r=dReg(),s=dLoad();if(!r||!s.done||s.sent===s.day||!DL_ON())return;
  try{const db=await netDB();const ref=db.ref(`lb/${dBoard(s.day)}/${dUid()}`);const ex=await ref.once("value");
   if(!ex.exists())await ref.set({name:r.name,score:s.total!=null?s.total:s.ans.filter(Boolean).length*50,ok:s.ans.filter(Boolean).length,time:Math.round((s.time||999)*10)/10,ans:s.ans.map(a=>a?1:0).join(""),date:Date.now()});
@@ -3674,7 +3675,7 @@ function dWireLeague(){const b=$("#dRegB");if(b)b.onclick=async()=>{b.disabled=t
  const rk=$("#dRank");if(rk&&dReg()&&dLoad().done)dTable("day").then(L=>{const i=L.findIndex(x=>x.u===dUid());if(i>=0)rk.textContent=` · המקום שלך היום: ${i+1} מתוך ${L.length}`}).catch(()=>{})}
 async function dShowTable(range){const b=dOv();const tabs=[["day","היום"],["week","השבוע"],["all","כל הזמנים"]];
  b.innerHTML=`<div class="end-k">🏆 ליגת האתגר היומי</div><div class="dtabs">${tabs.map(([k,n])=>`<button class="cb ${k===range?"go":""}" data-rg="${k}">${n}</button>`).join("")}</div><div id="dTbl" class="dtbl"><div class="muted">טוען…</div></div><div class="ovb"><button class="cb" id="dBackB">חזרה</button></div>`;
- $$("#dlyBody [data-rg]").forEach(x=>x.onclick=()=>dShowTable(x.dataset.rg));$("#dBackB").onclick=()=>dLoad().done&&dLoad().day===statDay()?dResult():dClose();
+ $$("#dlyBody [data-rg]").forEach(x=>x.onclick=()=>dShowTable(x.dataset.rg));$("#dBackB").onclick=()=>dLoad().done&&dLoad().day===dDay()?dResult():dClose();
  try{const L=await dTable(range),me=dUid();const top=L.slice(0,50);const mi=L.findIndex(x=>x.u===me);
   $("#dTbl").innerHTML=L.length?`<table><tr><th>#</th><th>שם</th><th>נק'</th><th>${range==="day"?"✔":"ימים"}</th></tr>${top.map((x,i)=>`<tr class="${x.u===me?"me":""}"><td>${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}</td><td>${esc(x.name)}${x.perfect&&range!=="day"?` <small>⭐${x.perfect}</small>`:""}</td><td>${x.pts}</td><td>${range==="day"?x.ok+"/5":x.days}</td></tr>`).join("")}${mi>=50?`<tr class="me"><td>${mi+1}</td><td>${esc(L[mi].name)}</td><td>${L[mi].pts}</td><td>${range==="day"?L[mi].ok+"/5":L[mi].days}</td></tr>`:""}</table><div class="muted">תשובה נכונה = עד 100 נק׳ לפי המהירות (20 שניות לשאלה)${range!=="day"?" · ⭐ = יום מושלם":""}</div>`:`<div class="muted">עוד אין תוצאות ${range==="day"?"היום":""} – היו הראשונים!</div>`}catch(e){$("#dTbl").innerHTML='<div class="muted">אין חיבור כרגע</div>'}}
 </script>
