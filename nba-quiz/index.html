@@ -530,7 +530,21 @@ body.kb .inpbtns .cb{padding:4px 10px;font-size:13px}
 .hof-list li.me{background:rgba(255,200,61,.18);color:var(--gold)}
 .hof-vs{font-family:Bungee,Rubik,sans-serif;font-size:13px;color:#ffd43b;white-space:nowrap}
 .hof-empty,.hof-load{text-align:center;padding:16px 6px;color:var(--muted)}
-.cb.share{background:linear-gradient(135deg,#25d366,#128c7e);border-color:#25d366}.cb.inst{width:100%;margin-top:10px;background:#1b2347;border-style:dashed}.howto{text-align:right;line-height:1.9;margin:10px 18px;font-size:17px}</style>
+.cb.share{background:linear-gradient(135deg,#25d366,#128c7e);border-color:#25d366}.cb.inst{width:100%;margin-top:10px;background:#1b2347;border-style:dashed}.howto{text-align:right;line-height:1.9;margin:10px 18px;font-size:17px}.dbtn{display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;border:0;border-radius:18px;padding:14px 12px;font-family:Rubik;color:#fff;background:linear-gradient(135deg,#2f9e44,#1b6e31);box-shadow:0 6px 22px rgba(47,158,68,.35);cursor:pointer}
+.dbtn .dt{font-family:'Secular One';font-size:22px}.dbtn .ds{font-size:14px;opacity:.9;font-weight:700}
+.dbtn.done{background:linear-gradient(135deg,#26305a,#1a2246);box-shadow:none;border:1px solid var(--line)}
+.dly .dq{font-size:clamp(19px,2.4vw,26px);font-weight:800;margin:14px 4px 16px;line-height:1.35}
+.dly .dopts{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dly .dopt{width:100%;min-height:56px;font-size:16px;padding:10px}
+.dly .dopt.ok{background:#2f9e44;border-color:#2f9e44}.dly .dopt.no{background:#c92a2a;border-color:#c92a2a}
+.dly .dprog{display:flex;gap:6px;justify-content:center;margin-top:10px}.dly .dprog i{width:34px;height:8px;border-radius:9px;background:#2a3566}
+.dly .dprog i.cur{background:#ffb35c}.dly .dprog i.ok{background:#2f9e44}.dly .dprog i.no{background:#c92a2a}
+.dly .dlvl{margin-top:12px;font-size:13px}
+.dly .dsq{font-size:40px;letter-spacing:4px;margin:10px 0 2px}.dly .dsc{font-family:'Secular One';font-size:44px;color:var(--gold)}.dly .dmsg{font-weight:800;font-size:18px;margin-bottom:12px}
+.dly .dstats{display:flex;gap:10px;justify-content:center;margin:6px 0 12px}.dly .dstats div{background:#141c3d;border:1px solid var(--line);border-radius:14px;padding:8px 12px;min-width:84px}.dly .dstats b{display:block;font-size:24px}.dly .dstats small{color:var(--muted);font-size:12px}
+.dly .drev{text-align:right;font-size:14px;display:flex;flex-direction:column;gap:6px;margin:8px 0 10px}.dly .drev div{background:#141c3d;border-radius:12px;padding:8px 10px}.dly .drev b{display:block;color:var(--gold);margin-top:2px}
+.dly .ovb{display:flex;gap:10px;margin-top:12px}.dly .ovb .cb{flex:1}
+@media(max-width:520px){.dly .dopts{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 <div class="app" id="app">
@@ -3148,6 +3162,7 @@ async function lbAll(){const ov=$("#allOv"),b=$("#allBody");ov.classList.add("on
 function goSetup(){if(NET.role)netLeave();if(G)G.tok++;G=null;closeInput();sceneOff();$("#app").classList.remove("ingame");show("setup");renderSetup()}
 function renderSetup(){const v=$("#v-setup");
  v.innerHTML=`<div class="hero"><div class="t">חידון ה-NBA הגדול</div><div class="s">אתה מול המחשב. 7 קטגוריות, 3 משימות, בלי רחמים.</div></div>
+${(()=>{const d=dState();return `<button class="dbtn ${d.doneToday?"done":""}" id="dailyBtn"><span class="dt">📅 האתגר היומי</span><span class="ds">${d.doneToday?`שיחקת היום: ${dSquares(d.s.ans)}${d.s.streak>1?` · 🔥 ${d.s.streak}`:""}`:"5 שאלות · 2 דקות · אותן שאלות לכולם"}</span></button>`})()}
 <div class="card"><div class="lbl">השם שלך</div><input id="pName" class="tname" maxlength="14" placeholder="שם פרטי או כינוי" value="${esc(ST.name)}"><div class="sws">${SWC.map(c=>`<button class="sw ${c===ST.color?"on":""}" data-sw="${c}" style="--s:${c}"></button>`).join("")}</div></div>
 <div class="card"><div class="lbl">רמת השאלות</div><div class="tiers">${TIERS.map(t=>`<button class="tier ${ST.tier===t.id?"on":""} ${t.soon?"soon":""}" data-tier="${t.id}" ${t.soon?"disabled":""}><b>${t.n}</b><small>${t.soon?"בקרוב":t.d}</small></button>`).join("")}</div></div>
 <div class="card"><div class="lbl">היריב שלך</div><div class="opps">${AIL.map((a,i)=>`<button class="opp ${ST.lvl===i?"on":""} ${i===3?"goat":""}" data-lvl="${i}" style="--oc:${a.color}"><span class="oav"><svg viewBox="22 4 56 58">${playerInner({name:a.short,color:a.color},AIFACE[i],false)}</svg></span><span class="otx"><b>${esc(a.name)}</b><small>${esc(a.desc)}</small></span><span class="ost">${"★".repeat(a.stars)}${"☆".repeat(4-a.stars)}</span></button>`).join("")}</div></div>
@@ -3210,7 +3225,7 @@ function stat(k){try{if(!FB_CFG||typeof NETLOCAL!=="undefined"&&NETLOCAL)return;
 (async function(){if(!/[?&]stats\b/.test(location.search)||!FB_CFG)return;
  const box=document.createElement("div");box.style.cssText="position:fixed;inset:0;z-index:9999;background:#0b1020;color:#fff;overflow:auto;padding:16px;font:15px system-ui;direction:rtl";box.innerHTML="<h2>📊 סטטיסטיקת החידון</h2><p>טוען…</p>";document.body.appendChild(box);
  try{const db=await netDB();const snap=await db.ref("stats").once("value");const S=snap.val()||{};
-  const cols=[["users","מבקרים"],["visit","כניסות"],["share","שיתופים"],["install","התקנות"],["pwa_open","מהאייקון"],["start_rookie","התחילו רוקי"],["start_mid","התחילו מיד"],["start_max","התחילו מקס"],["start_pvp","משחקי 2"],["end_rookie","סיימו רוקי"],["end_mid","סיימו מיד"],["end_max","סיימו מקס"]];
+  const cols=[["users","מבקרים"],["visit","כניסות"],["share","שיתופים"],["install","התקנות"],["pwa_open","מהאייקון"],["start_rookie","התחילו רוקי"],["start_mid","התחילו מיד"],["start_max","התחילו מקס"],["start_pvp","משחקי 2"],["daily_start","התחילו אתגר יומי"],["daily_end","סיימו אתגר יומי"],["daily_share","שיתפו אתגר יומי"],["end_rookie","סיימו רוקי"],["end_mid","סיימו מיד"],["end_max","סיימו מקס"]];
   const v=(r,k)=>(r[k]||0)+(r[k+"_s"]||0);
   const days=Object.keys(S).filter(k=>k!=="all").sort().reverse();
   const row=(lbl,r)=>`<tr><td>${lbl}</td>${cols.map(([k])=>`<td>${v(r,k)}</td>`).join("")}</tr>`;
@@ -3266,6 +3281,46 @@ document.addEventListener("click",e=>{if(e.target.closest("#eShare"))shareResult
  if(s&&!seen){try{sessionStorage.setItem("nbaSrc",s)}catch(e){}stat("src_"+s)}
  if(isStandalone()&&!seen){try{sessionStorage.setItem("nbaSrc","pwa")}catch(e){}stat("pwa_open")}
  if("serviceWorker" in navigator&&location.hostname.endsWith("edushow.co.il"))navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}})();
+
+/* ===================== DAILY CHALLENGE: 5 questions, same for everyone each day ===================== */
+const DAILY_EPOCH="2026-11-25";
+function dNum(d){const a=new Date(DAILY_EPOCH+"T12:00:00"),b=new Date(d+"T12:00:00");return Math.round((b-a)/864e5)+1}
+function dRng(seed){let h=1779033703^seed.length;for(let i=0;i<seed.length;i++){h=Math.imul(h^seed.charCodeAt(i),3432918353);h=h<<13|h>>>19}
+ let a=h>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function dPool(tier,lv){const o=[];(SETS[tier]||[]).forEach(s=>s.qs.forEach(r=>{const x=r[lv];if(x&&x.t==="open"){const op=optsOf(x.h);if(op&&op.length===4&&op.some(z=>norm(z)===norm(x.a))&&!/הקודמת|הבאה|השנה|העונה הזו|כרגע/.test(x.q))o.push(x)}}));return o}
+function dailyQs(day){const n=Math.max(0,dNum(day)-1),R=dRng("nba-daily-"+day),plan=[["rookie",0],["rookie",1],["mid",1],["max",0],["max",1]],out=[],used=new Set();
+ plan.forEach(([t,l],k)=>{const P=dPool(t,l);if(!P.length)return;const pr=dRng("nba-slot-"+k),perm=P.map((_,i)=>i);for(let i=perm.length-1;i>0;i--){const j=Math.floor(pr()*(i+1));[perm[i],perm[j]]=[perm[j],perm[i]]}
+  for(let off=0;off<P.length;off++){const x=P[perm[(n+off)%P.length]];if(used.has(norm(x.a)))continue;used.add(norm(x.a));const op=optsOf(x.h).slice();for(let i=op.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[op[i],op[j]]=[op[j],op[i]]}out.push({q:x.q,a:op.find(z=>norm(z)===norm(x.a)),opts:op,t});break}});return out}
+function dLoad(){try{return JSON.parse(localStorage.getItem("nbaDaily")||"{}")}catch(e){return{}}}
+function dSave(o){try{localStorage.setItem("nbaDaily",JSON.stringify(o))}catch(e){}}
+function dState(){const d=statDay(),s=dLoad();return {day:d,s,doneToday:s.day===d&&s.done}}
+function dSquares(ans){return ans.map(a=>a?"🟩":"🟥").join("")}
+function dShareText(s){return `📅 האתגר היומי של חידון ה-NBA #${dNum(s.day)}\n${dSquares(s.ans)} ${s.ans.filter(Boolean).length}/5${s.streak>1?` · 🔥 ${s.streak} ימים ברצף`:""}\nתצליחו יותר? 🏀`}
+async function dShare(){const s=dLoad();if(!s.done)return;stat("daily_share");const text=dShareText(s),url=SITE+"?daily=1&src=daily";
+ try{if(navigator.share){await navigator.share({text,url});return}}catch(e){if(e&&e.name==="AbortError")return}
+ open("https://wa.me/?text="+encodeURIComponent(text+"\n"+url),"_blank")}
+function dOv(){let o=$("#dailyOv");if(!o){o=document.createElement("div");o.id="dailyOv";o.className="ov";o.innerHTML='<div class="ovc dly" id="dlyBody"></div>';document.body.appendChild(o)}o.classList.add("on");return $("#dlyBody")}
+function dClose(){const o=$("#dailyOv");if(o)o.classList.remove("on");if($("#v-setup")&&$("#v-setup").classList.contains("on"))renderSetup()}
+function dLeft(){const n=new Date(),m=new Date(n);m.setHours(24,0,0,0);const s=Math.max(0,Math.floor((m-n)/1000));return `${Math.floor(s/3600)}:${String(Math.floor(s%3600/60)).padStart(2,"0")}`}
+function dResult(){const s=dLoad(),b=dOv(),k=s.ans.filter(Boolean).length,msg=["אוי. מחר יום חדש 😅","מתחילים מאיפשהו 💪","חצי כוס מלאה 🙂","יפה מאוד! 👏","כמעט מושלם! 🔥","מושלם! אתה חי את הליגה 🐐"][k];
+ b.innerHTML=`<div class="end-k">📅 האתגר היומי #${dNum(s.day)}</div><div class="dsq">${dSquares(s.ans)}</div><div class="dsc">${k}/5</div><div class="dmsg">${msg}</div>
+ <div class="dstats"><div><b>${s.streak||1}</b><small>🔥 ימים ברצף</small></div><div><b>${s.played||1}</b><small>אתגרים</small></div><div><b>${s.best||0}</b><small>הרצף הכי ארוך</small></div></div>
+ <div class="drev">${(s.rev||[]).map((r,i)=>`<div class="${s.ans[i]?"ok":"no"}"><span>${s.ans[i]?"✅":"❌"}</span> ${esc(r.q)}<b>${esc(r.a)}</b></div>`).join("")}</div>
+ <div class="muted">אתגר חדש בעוד ${dLeft()} שעות</div>
+ <div class="ovb"><button class="cb share" id="dShareB">📲 שתפו את התוצאה</button><button class="cb" id="dCloseB">לחידון המלא 🏀</button></div>`;
+ $("#dShareB").onclick=dShare;$("#dCloseB").onclick=dClose}
+function dailyOpen(){const st=dState();if(st.doneToday)return dResult();
+ const Q=dailyQs(st.day);if(Q.length<5){toast("האתגר היומי לא זמין כרגע");return}
+ stat("daily_start");let i=0;const ans=[];const b=dOv();
+ const draw=()=>{const x=Q[i];b.innerHTML=`<div class="end-k">📅 האתגר היומי #${dNum(st.day)} · שאלה ${i+1}/5</div><div class="dprog">${Q.map((_,j)=>`<i class="${j<i?(ans[j]?"ok":"no"):j===i?"cur":""}"></i>`).join("")}</div><div class="dq">${esc(x.q)}</div><div class="dopts">${x.opts.map((o,j)=>`<button class="cb dopt" data-o="${j}">${esc(o)}</button>`).join("")}</div><div class="muted dlvl">${{rookie:"🟢 רוקי",mid:"🟡 מיד",max:"🔴 מקס"}[x.t]}</div>`;
+  $$("#dlyBody .dopt").forEach(btn=>btn.onclick=()=>{if(b.dataset.lock==="1")return;b.dataset.lock="1";const pick=x.opts[+btn.dataset.o],ok=pick===x.a;ans.push(ok);
+   $$("#dlyBody .dopt").forEach(z=>{const v=x.opts[+z.dataset.o];if(v===x.a)z.classList.add("ok");else if(z===btn)z.classList.add("no");z.disabled=true});
+   setTimeout(()=>{b.dataset.lock="";i++;if(i<5)draw();else finish()},ok?900:1700)})};
+ const finish=()=>{const s=dLoad(),y=new Date();y.setDate(y.getDate()-1);const yd=statDay(y);
+  const streak=s.day===yd&&s.done?(s.streak||1)+1:1;const o={day:st.day,done:true,ans,rev:Q.map(x=>({q:x.q,a:x.a})),streak,best:Math.max(s.best||0,streak),played:(s.played||0)+1};dSave(o);stat("daily_end");stat("daily_"+ans.filter(Boolean).length);dResult()};
+ draw()}
+document.addEventListener("click",e=>{if(e.target.closest("#dailyBtn"))dailyOpen()});
+(function(){try{if(/[?&]daily\b/.test(location.search))setTimeout(dailyOpen,600)}catch(e){}})();
 </script>
 </body>
 </html>
