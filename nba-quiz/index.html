@@ -561,6 +561,7 @@ body.kb .inpbtns .cb{padding:4px 10px;font-size:13px}
 .instTop .it{font-weight:900;font-size:17px;color:#ffcf8a}.instTop .is{font-size:13px;opacity:.85;font-weight:600}
 .instTop.sm{margin:4px 0 10px;padding:9px}.instTop.sm .it{font-size:15px}
 @keyframes instPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,179,92,.0)}50%{box-shadow:0 0 0 6px rgba(255,179,92,.18)}}
+.dly .dlg.join.hot{border:2px solid #f08c00;background:linear-gradient(135deg,rgba(240,140,0,.18),rgba(240,140,0,.06));margin:10px 0 12px}.dly .dlg.join.hot .dlt{color:#ffc078}
 </style>
 </head>
 <body>
@@ -3486,7 +3487,7 @@ async function lbAll(){const ov=$("#allOv"),b=$("#allBody");ov.classList.add("on
 function goSetup(){if(NET.role)netLeave();if(G)G.tok++;G=null;closeInput();sceneOff();$("#app").classList.remove("ingame");show("setup");renderSetup()}
 function renderSetup(){const v=$("#v-setup");
  v.innerHTML=`<div class="hero"><div class="t">חידון ה-NBA הגדול</div><div class="s">אתה מול המחשב. 7 קטגוריות, 3 משימות, בלי רחמים.</div></div>
-${(()=>{const d=dState();return `<button class="dbtn ${d.doneToday?"done":""}" id="dailyBtn"><span class="dt">📅 האתגר היומי</span><span class="ds">${d.doneToday?`שיחקת היום: ${dSquares(d.s.ans)}${d.s.streak>1?` · 🔥 ${d.s.streak}`:""}`:"5 שאלות על מה שקורה בליגה עכשיו · 2 דקות"}</span></button>${DL_ON()?`<button class="dlink" id="dLeagueBtn">${dReg()?"🏆 טבלת ליגת האתגר היומי":dTrial()?"📝 הרשמה לליגה – מתחילה מחר ב-10:00":"🏆 הצטרפות לליגה וטבלה"}</button><button class="dlink sm" id="dRulesBtn">📜 החוקים</button><div id="dChamp" class="dchamp"></div>${(setTimeout(dFillChamp,60),"")}`:""}${isStandalone()?"":`<button class="instTop" data-inst="1"><span class="it">📲 הוסיפו את החידון למסך הבית</span><span class="is">נפתח כמו אפליקציה, בלחיצה אחת – כדי לא לפספס אף אתגר</span></button>`}`})()}
+${(()=>{const d=dState();return `<button class="dbtn ${d.doneToday?"done":""}" id="dailyBtn"><span class="dt">📅 האתגר היומי</span><span class="ds">${d.doneToday?`שיחקת היום: ${dSquares(d.s.ans)}${d.s.streak>1?` · 🔥 ${d.s.streak}`:""}`:"5 שאלות על מה שקורה בליגה עכשיו · 2 דקות"}</span></button>${DL_ON()?`<button class="dlink" id="dLeagueBtn">${dReg()?"🏆 טבלת ליגת האתגר היומי":dPending()?"🏆 הנקודות שלך מהיום מחכות – הירשמו לליגה":dTrial()?"📝 הרשמה לליגה – מתחילה מחר ב-10:00":"🏆 הצטרפות לליגה וטבלה"}</button><button class="dlink sm" id="dRulesBtn">📜 החוקים</button><div id="dChamp" class="dchamp"></div>${(setTimeout(dFillChamp,60),"")}`:""}${isStandalone()?"":`<button class="instTop" data-inst="1"><span class="it">📲 הוסיפו את החידון למסך הבית</span><span class="is">נפתח כמו אפליקציה, בלחיצה אחת – כדי לא לפספס אף אתגר</span></button>`}`})()}
 <div class="card"><div class="lbl">השם שלך</div><input id="pName" class="tname" maxlength="14" placeholder="שם פרטי או כינוי" value="${esc(ST.name)}"><div class="sws">${SWC.map(c=>`<button class="sw ${c===ST.color?"on":""}" data-sw="${c}" style="--s:${c}"></button>`).join("")}</div></div>
 <div class="card"><div class="lbl">רמת השאלות</div><div class="tiers">${TIERS.map(t=>`<button class="tier ${ST.tier===t.id?"on":""} ${t.soon?"soon":""}" data-tier="${t.id}" ${t.soon?"disabled":""}><b>${t.n}</b><small>${t.soon?"בקרוב":t.d}</small></button>`).join("")}</div></div>
 <div class="card"><div class="lbl">היריב שלך</div><div class="opps">${AIL.map((a,i)=>`<button class="opp ${ST.lvl===i?"on":""} ${i===3?"goat":""}" data-lvl="${i}" style="--oc:${a.color}"><span class="oav"><svg viewBox="22 4 56 58">${playerInner({name:a.short,color:a.color},AIFACE[i],false)}</svg></span><span class="otx"><b>${esc(a.name)}</b><small>${esc(a.desc)}</small></span><span class="ost">${"★".repeat(a.stars)}${"☆".repeat(4-a.stars)}</span></button>`).join("")}</div></div>
@@ -3548,7 +3549,7 @@ function stat(k){try{if(!FB_CFG||typeof NETLOCAL!=="undefined"&&NETLOCAL)return;
 (async function(){if(!/[?&]stats\b/.test(location.search)||!FB_CFG)return;
  const box=document.createElement("div");box.style.cssText="position:fixed;inset:0;z-index:9999;background:#0b1020;color:#fff;overflow:auto;padding:16px;font:15px system-ui;direction:rtl";box.innerHTML="<h2>📊 סטטיסטיקת החידון</h2><p>טוען…</p>";document.body.appendChild(box);
  try{const db=await netDB();const snap=await db.ref("stats").once("value");const S=snap.val()||{};
-  const cols=[["users","מבקרים"],["visit","כניסות"],["share","שיתופים"],["install","התקנות"],["pwa_open","מהאייקון"],["start_rookie","התחילו רוקי"],["start_mid","התחילו מיד"],["start_max","התחילו מקס"],["start_pvp","משחקי 2"],["daily_start","התחילו אתגר יומי"],["daily_end","סיימו אתגר יומי"],["daily_share","שיתפו אתגר יומי"],["daily_live","אתגר יומי עדכני"],["league_join","נרשמו לליגה"],["league_submit","תוצאות לליגה"],["rules_view","צפו בחוקים"],["install_click2","לחצו על מסך הבית"],["daily_bank","אתגר יומי מהמאגר"],["end_rookie","סיימו רוקי"],["end_mid","סיימו מיד"],["end_max","סיימו מקס"]];
+  const cols=[["users","מבקרים"],["visit","כניסות"],["share","שיתופים"],["install","התקנות"],["pwa_open","מהאייקון"],["start_rookie","התחילו רוקי"],["start_mid","התחילו מיד"],["start_max","התחילו מקס"],["start_pvp","משחקי 2"],["daily_start","התחילו אתגר יומי"],["daily_end","סיימו אתגר יומי"],["daily_share","שיתפו אתגר יומי"],["daily_live","אתגר יומי עדכני"],["league_join","נרשמו לליגה"],["league_join_late","נרשמו אחרי ששיחקו"],["league_submit","תוצאות לליגה"],["rules_view","צפו בחוקים"],["install_click2","לחצו על מסך הבית"],["daily_bank","אתגר יומי מהמאגר"],["end_rookie","סיימו רוקי"],["end_mid","סיימו מיד"],["end_max","סיימו מקס"]];
   const v=(r,k)=>(r[k]||0)+(r[k+"_s"]||0);
   const days=Object.keys(S).filter(k=>k!=="all").sort().reverse();
   const row=(lbl,r)=>`<tr><td>${lbl}</td>${cols.map(([k])=>`<td>${v(r,k)}</td>`).join("")}</tr>`;
@@ -3632,9 +3633,10 @@ function dClose(){const o=$("#dailyOv");if(o)o.classList.remove("on");if($("#v-s
 function dLeft(){const n=new Date(),m=new Date(n);m.setHours(10,0,0,0);if(m<=n)m.setDate(m.getDate()+1);const s=Math.max(0,Math.floor((m-n)/1000));return `${Math.floor(s/3600)}:${String(Math.floor(s%3600/60)).padStart(2,"0")}`}
 function dResult(){const s=dLoad(),b=dOv(),k=s.ans.filter(Boolean).length,msg=["אוי. מחר יום חדש 😅","מתחילים מאיפשהו 💪","חצי כוס מלאה 🙂","יפה מאוד! 👏","כמעט מושלם! 🔥","מושלם! אתה חי את הליגה 🐐"][k];
  b.innerHTML=`<div class="end-k">${dTitle(s.day)}</div><div class="dsq">${dSquares(s.ans)}</div><div class="dsc">${s.total!=null?s.total+" נק׳":k+"/5"}</div><div class="muted">${k}/5 תשובות נכונות${s.time?` · ⏱️ ${Math.round(s.time)} שניות`:""}</div><div class="dmsg">${msg}</div>
+ ${dPendingJoin(s)}
  <div class="dstats"><div><b>${s.streak||1}</b><small>🔥 ימים ברצף</small></div><div><b>${s.played||1}</b><small>אתגרים</small></div><div><b>${s.best||0}</b><small>הרצף הכי ארוך</small></div></div>
  <div class="drev">${(s.rev||[]).map((r,i)=>`<div class="${s.ans[i]?"ok":"no"}"><span>${s.ans[i]?"✅":"❌"}</span> ${esc(r.q)}<b>${esc(r.a)}</b>${r.ex?`<small>${esc(r.ex)}</small>`:""}</div>`).join("")}</div>
- ${dLeagueBox()}${dInstBox()}
+ ${dPending(s)?"":dLeagueBox()}${dInstBox()}
  <div class="muted">אתגר חדש בעוד ${dLeft()} שעות</div>
  <div class="ovb"><button class="cb share" id="dShareB">📲 שתפו את התוצאה</button><button class="cb" id="dCloseB">לחידון המלא 🏀</button></div>`;
  $("#dShareB").onclick=dShare;$("#dCloseB").onclick=dClose;dWireLeague();if(dReg())dSubmit()}
@@ -3652,7 +3654,7 @@ async function dailyOpen(){const st=dState();if(st.doneToday)return dResult();
  const finish=()=>{const s=dLoad(),yd=dDay(Date.now()-864e5);
   const streak=s.day===yd&&s.done?(s.streak||1)+1:1;const o={day:st.day,done:true,time:Math.round(tsum*10)/10,pts,total:pts.reduce((a,c)=>a+c,0),ans,rev:Q.map(x=>({q:x.q,a:x.a,ex:x.ex||""})),live:!!live,streak,best:Math.max(s.best||0,streak),played:(s.played||0)+1};dSave(o);stat("daily_end");stat("daily_"+ans.filter(Boolean).length);dResult();dSubmit().then(()=>{const rk=$("#dRank");if(rk)dWireLeague()})};
  draw()}
-document.addEventListener("click",e=>{if(e.target.closest("#dailyBtn"))dailyOpen();if(e.target.closest("#dLeagueBtn"))(dTrial()&&!dReg()?dShowRegistered():dShowTable("all"));if(e.target.closest("#dRulesBtn"))dShowRules()});
+document.addEventListener("click",e=>{if(e.target.closest("#dailyBtn"))dailyOpen();if(e.target.closest("#dLeagueBtn"))(dPending()?dResult():dTrial()&&!dReg()?dShowRegistered():dShowTable("all"));if(e.target.closest("#dRulesBtn"))dShowRules()});
 (function(){try{if(/[?&]daily\b/.test(location.search))setTimeout(dailyOpen,600)}catch(e){}})();
 
 /* ===================== DAILY LEAGUE: register once, every finished daily challenge counts ===================== */
@@ -3665,11 +3667,11 @@ async function dSubmit(){const r=dReg(),s=dLoad();if(!r||!s.done||s.sent===s.day
  try{const db=await netDB();const ref=db.ref(`lb/${dBoard(s.day)}/${dUid()}`);const ex=await ref.once("value");
   if(!ex.exists())await ref.set({name:r.name,score:s.total!=null?s.total:s.ans.filter(Boolean).length*5,ok:s.ans.filter(Boolean).length,time:Math.round((s.time||999)*10)/10,ans:s.ans.map(a=>a?1:0).join(""),date:Date.now()});
   s.sent=s.day;dSave(s);stat("league_submit")}catch(e){}}
-async function dRegister(name){name=String(name||"").trim().slice(0,14);if(name.length<2)return "צריך לפחות 2 תווים";if(badName(name))return "בחרו כינוי אחר 🙂";
+async function dRegister(name){const late=dPending();name=String(name||"").trim().slice(0,14);if(name.length<2)return "צריך לפחות 2 תווים";if(badName(name))return "בחרו כינוי אחר 🙂";
  try{const db=await netDB();const all=(await db.ref("lb/dplayers").once("value")).val()||{};const me=dUid();
   if(Object.entries(all).some(([k,v])=>k!==me&&v&&norm(v.name)===norm(name)))return "הכינוי הזה כבר תפוס – נסו אחר";
   const ref=db.ref(`lb/dplayers/${me}`);const ex=await ref.once("value");if(!ex.exists())await ref.set({name,score:0,date:Date.now()});
-  const nm=ex.exists()&&ex.val().name?ex.val().name:name;try{localStorage.setItem("nbaLeague",JSON.stringify({name:nm}))}catch(e){}stat("league_join");await dSubmit();return ""}catch(e){return "אין חיבור כרגע – נסו שוב"}}
+  const nm=ex.exists()&&ex.val().name?ex.val().name:name;try{localStorage.setItem("nbaLeague",JSON.stringify({name:nm}))}catch(e){}stat("league_join");if(late)stat("league_join_late");await dSubmit();return ""}catch(e){return "אין חיבור כרגע – נסו שוב"}}
 function dMonkey(u,d){const R=dRng("monkey-"+u+"-"+d);let score=0,ok=0,time=0;for(let k=0;k<5;k++){const t=4+R()*16;time+=t;if(R()<.25){ok++;score+=Math.max(3,Math.round(10-t*.35))}}return {score,ok,time:Math.round(time*10)/10,monkey:1}}
 function dDayDate(d){return new Date(d+"T12:00:00")}
 function dAddDays(d,n){const x=dDayDate(d);x.setDate(x.getDate()+n);return statDay(x)}
@@ -3692,6 +3694,10 @@ function dFmt(d){const x=dDayDate(d);return x.getDate()+"."+(x.getMonth()+1)}
 function dMonkeyNote(){try{const r=dReg();if(!r)return;const y=dDay(Date.now()-864e5);if(y<LEAGUE0())return;const s=dLoad();if(s.day===y&&s.done)return;const k="nbaMonk_"+y;if(localStorage.getItem(k))return;localStorage.setItem(k,"1");
  netDB().then(db=>db.ref(`lb/${dBoard(y)}/${dUid()}`).once("value")).then(x=>{if(x.exists())return;const m=dMonkey(dUid(),y);toast(`🐒 שכחת אתמול – הקוף שיחק במקומך וצבר ${m.score} נק׳`,"#7048e8")}).catch(()=>{})}catch(e){}}
 setTimeout(dMonkeyNote,1500);
+setTimeout(()=>{try{const s=dLoad();if(!dPending(s))return;const k="nbaPendT_"+s.day;if(localStorage.getItem(k))return;localStorage.setItem(k,"1");const pts=s.total!=null?s.total:s.ans.filter(Boolean).length*5;toast(`🏆 ה-${pts} נק׳ שלך מהאתגר עוד לא בטבלה – הירשמו לליגה`,"#f08c00")}catch(e){}},2200);
+function dPending(s){s=s||dLoad();return DL_ON()&&!dReg()&&s.done&&s.day&&s.day>=LEAGUE0()&&!dTrial(s.day)&&s.sent!==s.day}
+function dPendingJoin(s){if(!dPending(s))return "";const pts=s.total!=null?s.total:s.ans.filter(Boolean).length*5;
+ return `<div class="dlg join hot"><div class="dlt">הנקודות שלך (${pts}) עוד לא בטבלה</div><div class="muted">בחרו כינוי והן ייכנסו לטבלת הליגה של היום. ההרשמה לוקחת 5 שניות.</div><div class="dlr"><input id="dRegN" class="tname" maxlength="14" placeholder="כינוי לטבלה"><button class="cb go" id="dRegB">הכניסו אותי לטבלה</button></div><div id="dRegM" class="muted"></div></div>`}
 function dLeagueBox(){if(!DL_ON())return "";const r=dReg();
  if(r)return `<div class="dlg"><div>🏆 אתם בליגה בתור <b>${esc(r.name)}</b>${dTrial()?"<br><small>הליגה מתחילה מחר ב-10:00 – היום רק ניסיון</small>":""}<span id="dRank"></span></div><button class="cb" id="dTblB">טבלת הליגה</button></div>`;
  return `<div class="dlg join"><div class="dlt">🏆 הצטרפו לליגת האתגר היומי</div><div class="muted">${dTrial()?"הליגה מתחילה מחר ב-10:00 בבוקר – הירשמו עכשיו, ומהאתגר הראשון כל נקודה נספרת":"כל יום שתשחקו נכנס לטבלה – מי יוביל את החודש?"}</div><div class="dlr"><input id="dRegN" class="tname" maxlength="14" placeholder="כינוי לטבלה"><button class="cb go" id="dRegB">הצטרפות</button></div><div id="dRegM" class="muted"></div></div>`}
